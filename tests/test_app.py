@@ -150,7 +150,7 @@ class AppTest(unittest.TestCase):
         r = self.post(app, "/notify", b"title=Bazarr&body=Subtitle+downloaded&type=info",
                       query={"instance": "bazarr"}, headers={"content-type": "application/x-www-form-urlencoded"})
         message = decrypt(self.bark.requests[-1][2])
-        self.assertEqual((message["title"], message["level"]), ("💬 bazarr · Bazarr", "active"))
+        self.assertEqual((message["title"], message["level"]), ("🔔 bazarr · Bazarr", "active"))
 
     def test_notify_always_200(self):
         self.bark.statuses = [500, 500, 500, 500]

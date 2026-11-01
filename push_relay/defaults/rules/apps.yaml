@@ -40,11 +40,6 @@ notify:
   emoji: "🔔"
   tag: bell
   instances:
-    bazarr:
-      emoji: "💬"
-      tag: speech_balloon
-      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/bazarr.png
-      group: arrs
     speedtest:
       emoji: "🚀"
       tag: rocket

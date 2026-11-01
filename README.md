@@ -8,7 +8,7 @@ posters, icons, groups and tap actions) and/or **[ntfy](https://ntfy.sh)** messa
 Radarr / Sonarr / Lidarr / Whisparr / Prowlarr ─┐
 Seerr ──────────────────────────────────────────┤  POST /hook/<source>   ┌─► Bark (AES-GCM)
 Decypharr ──────────────────────────────────────┤ ─────────────────────► │
-Speedtest Tracker / Bazarr (Apprise) ───────────┘  POST /notify[/<key>]  └─► ntfy
+Apprise / custom JSON (Speedtest, …) ───────────┘  POST /notify[/<key>]  └─► ntfy
 ```
 
 ## How it works
@@ -81,14 +81,14 @@ Order: `?group=`, then (on `/notify`) a group from the Apprise side, then `apps.
 
 | Default group | Events |
 |---|---|
-| `arrs` | Radarr, Sonarr, Lidarr, Whisparr, Prowlarr media and test events; Bazarr |
+| `arrs` | Radarr, Sonarr, Lidarr, Whisparr, Prowlarr media and test events |
 | `system` | Health, health restored and update events from any *arr; anything without a group |
 | `requests` | Seerr |
 | `downloads` | Decypharr |
 | `network` | Speedtest Tracker |
 
 On `/notify` the group can also come from the Apprise side: a `group=` parameter on the notification URL
-(`bark://timeSensitive?group=network`) or a `group` field in the payload (`json://…?-group=arrs`).
+(`bark://timeSensitive?group=network`) or a `group` field in the payload (`json://…?-group=media`).
 
 On the public ntfy.sh, topics are shared by everyone: reserve them or use your own ntfy server.
 
@@ -119,8 +119,20 @@ container name (for example behind a VPN container).
 "notifications": { "enabled": true, "callback_url": "http://push:8092/hook/decypharr?token=…", "events": ["download_failed", "repair_failed"] }
 ```
 
-**Apprise-only apps (Speedtest Tracker, Bazarr, …)** — point the Apprise API URL at
+**Apprise-only apps (Speedtest Tracker, …)** — point the Apprise API URL at
 `http://push:8092/notify/<name>?token=…` and use a notification URL that names the level, e.g. `bark://timeSensitive`.
+
+## Other apps
+
+- **Speaks Apprise, or lets you write the webhook JSON** (Jellyfin webhook plugin, Home Assistant, scripts, …):
+  send `{"title": "…", "body": "…", "type": "info"}` to `/notify/<name>`. It uses the `generic` template
+  (`🔔 <name> · <title>` + body) and is customised with `?emoji=`, `?icon=`, `?group=`, `?level=`, … or an
+  `apps.yaml` entry under `notify.instances`. No code needed.
+- **Only sends its own fixed format** (e.g. a new *arr-style webhook): add one adapter in `push_relay/sources/`
+  that turns the payload into an `Event` and register it. It then uses the existing `media` / `health` /
+  `generic` templates; a `<source>.<kind>.json` template is only needed for a different look.
+
+Templates are per kind of event, not per app, so a new app never needs its own template.
 
 ## Overrides (`/config`)
 
