@@ -57,23 +57,38 @@ With neither backend configured, or an invalid `BARK_KEY`, `/health` answers 503
 | `POST /notify[/<key>]` | Apprise API emulation (`{urls, title, body, type, format, tag}`, JSON or form). `<key>` (or `?instance=`) is the instance name. The level comes from the URL (`bark://timeSensitive`, `bark://critical`, `ntfy://high`, `barks://…?level=…`) or the tag, else from the type. Always `200`. |
 
 `instance` is the display name (e.g. `radarr-4k`). Without it: the payload's `instanceName`, then the source name.
-`group` (optional, on both endpoints) picks the Bark group and ntfy topic for that sender.
+
+### Customising from the URL
+
+Both endpoints accept query parameters that win over `apps.yaml` and the severity rules:
+
+| Parameter | Effect |
+|---|---|
+| `group` | Bark group and ntfy topic |
+| `level` | `passive` / `active` / `timeSensitive` / `critical` (or `low` / `normal` / `high` / `urgent`) |
+| `name` | display name in the title |
+| `emoji` | title emoji (events with their own, like health and test, keep theirs) |
+| `icon` | Bark icon URL |
+| `tap` | URL opened on tap |
+| `tag` | ntfy tag |
+
+Example: `http://push:8092/hook/radarr?instance=radarr-4k&group=movies&level=timeSensitive&token=…`
 
 ## Groups
 
 One group per event: the **Bark group** and the **ntfy topic** (lower-cased, `[a-z0-9-]`).
-Order: `?group=` in the URL, then `apps.yaml` (`groups[kind]`, then `group`), then the instance name.
+Order: `?group=`, then (on `/notify`) a group from the Apprise side, then `apps.yaml` (`groups[kind]`, then `group`).
 
 | Default group | Events |
 |---|---|
-| `arrs` | Radarr, Sonarr, Lidarr, Whisparr, Prowlarr media and test events |
-| `health` | Health, health restored and update events from any *arr |
+| `arrs` | Radarr, Sonarr, Lidarr, Whisparr, Prowlarr media and test events; Bazarr |
+| `system` | Health, health restored and update events from any *arr; anything without a group |
 | `requests` | Seerr |
 | `downloads` | Decypharr |
-| instance name | `/notify` (e.g. `speedtest`, `bazarr`) |
+| `network` | Speedtest Tracker |
 
 On `/notify` the group can also come from the Apprise side: a `group=` parameter on the notification URL
-(`bark://timeSensitive?group=network`) or a `group` field in the payload (`json://…?-group=subs`).
+(`bark://timeSensitive?group=network`) or a `group` field in the payload (`json://…?-group=arrs`).
 
 On the public ntfy.sh, topics are shared by everyone: reserve them or use your own ntfy server.
 

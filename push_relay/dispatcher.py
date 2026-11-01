@@ -16,9 +16,11 @@ class Dispatcher:
         self.rules = rules
         self.notifiers = notifiers
 
-    def dispatch(self, event: Event) -> list[Result]:
+    def dispatch(self, event: Event, overrides: dict[str, str] | None = None) -> list[Result]:
+        """overrides: profile fields from the request URL, applied over apps.yaml."""
         severity = self.rules.severity(event)
-        view = build_view(event, self.rules.app(event.source, event.instance), severity)
+        app = self.rules.app(event.source, event.instance).customised(overrides or {})
+        view = build_view(event, app, severity)
         results = []
         for notifier in self.notifiers:
             try:

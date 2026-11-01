@@ -10,8 +10,9 @@ from urllib.parse import parse_qs
 from . import __version__
 from .config import Settings
 from .dispatcher import Dispatcher
+from .model import Event, to_severity
 from .notifiers import build_notifiers
-from .rules import Rules
+from .rules import CUSTOMISABLE, Rules
 from .sources import NOTIFY, SOURCES, Context, PayloadError
 from .templates import TemplateStore
 
@@ -79,8 +80,7 @@ class Application:
         if event is None:
             log.info("%s: ignored event %s", source_name, payload.get("eventType") or "")
             return Response(200, {"status": "ignored"})
-        event.group = request.query.get("group") or event.group
-        results = self.dispatcher.dispatch(event)
+        results = self.dispatcher.dispatch(event, self._customise(event, request.query))
         sent = [r.backend for r in results if r.ok]
         body = {"status": "sent" if sent else "failed", "sent": sent,
                 "failed": {r.backend: r.detail for r in results if not r.ok}}
@@ -91,8 +91,7 @@ class Application:
         try:
             payload = self._apprise_payload(request)
             event = NOTIFY.parse(payload, self._context(key or request.query.get("instance", "")))
-            event.group = request.query.get("group") or event.group
-            results = self.dispatcher.dispatch(event)
+            results = self.dispatcher.dispatch(event, self._customise(event, request.query))
             ok = any(r.ok for r in results)
         except ValueError as exc:
             log.warning("notify: rejected payload: %s", exc)
@@ -103,6 +102,16 @@ class Application:
         return Response(200, {"success": ok})
 
     # --- helpers ---------------------------------------------------------------------------
+    @staticmethod
+    def _customise(event: Event, query: dict[str, str]) -> dict[str, str]:
+        """Apply ?group= and ?level= to the event; return the profile overrides (?emoji=, ?icon=, ...).
+
+        The request URL wins over anything from the payload and apps.yaml.
+        """
+        event.group = query.get("group") or event.group
+        event.severity = to_severity(query.get("level", "")) or event.severity
+        return {key: query[key] for key in CUSTOMISABLE if query.get(key)}
+
     def _context(self, instance: str) -> Context:
         return Context(instance=instance, seerr_url=self.settings.seerr_url)
 

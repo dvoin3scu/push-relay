@@ -84,13 +84,30 @@ class AppTest(unittest.TestCase):
     def test_groups(self):
         app = self.app()
         self.post(app, "/hook/radarr", payload("health-error"), {"instance": "radarr-hd"})
-        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "health")
-        self.assertEqual(self.ntfy.requests[-1][2]["topic"], "health")
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "system")
+        self.assertEqual(self.ntfy.requests[-1][2]["topic"], "system")
         self.post(app, "/hook/seerr", payload("seerr-pending"), {"group": "Kids Requests"})
         self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "Kids Requests")
         self.assertEqual(self.ntfy.requests[-1][2]["topic"], "kids-requests")
         self.post(app, "/notify/speedtest", {"body": "x"})
-        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "speedtest")
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "network")
+        self.post(app, "/notify/unknown", {"body": "x", "urls": "bark://active?group=from-payload"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "from-payload")
+        self.post(app, "/notify/unknown", {"body": "x", "urls": "bark://active?group=from-payload"}, {"group": "from-url"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "from-url")
+        self.post(app, "/notify/unknown", {"body": "x"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "system")
+
+    def test_url_customisation_wins_over_apps_yaml(self):
+        query = {"instance": "radarr-4k", "emoji": "🎥", "icon": "https://x/i.png", "tap": "https://x",
+                 "name": "Movies", "tag": "movie_camera", "level": "critical", "group": "films"}
+        self.post(self.app(), "/hook/radarr", payload("radarr-grab"), query)
+        message = decrypt(self.bark.requests[0][2])
+        self.assertEqual(message["title"], "🎥 Movies · Drive (2011)")
+        self.assertEqual((message["icon"], message["url"], message["level"], message["group"]),
+                         ("https://x/i.png", "https://x", "critical", "films"))
+        ntfy = self.ntfy.requests[0][2]
+        self.assertEqual((ntfy["tags"], ntfy["priority"], ntfy["topic"]), (["movie_camera"], 5, "films"))
 
     def test_health_error_is_critical(self):
         self.post(self.app(BARK_CRITICAL_VOLUME="6"), "/hook/radarr", payload("health-error"), {"instance": "radarr-hd"})

@@ -6,29 +6,27 @@
 #   tap     URL opened when the notification is tapped
 #   group   Bark group / ntfy topic
 #   groups  group per event kind (media | health | generic), wins over group
-# Group order: ?group= in the URL, then groups[kind], then group, then the instance name.
-# Entries merge: default <- source <- instance. Override in /config/rules/apps.yaml with only the
-# keys that change, e.g.:
+#
+# Entries merge: default <- source <- instance. The request URL wins over all of them:
+#   ?name= ?emoji= ?tag= ?icon= ?tap= ?group= ?level=
+# Group order: ?group=, group from the Apprise payload/URL (/notify), groups[kind], group.
+#
+# Override in /config/rules/apps.yaml with only the keys that change, e.g.:
 #   radarr:
 #     instances:
 #       rdrr-4k: {group: movies-4k}
+
 default:
+  group: system
   groups:
-    health: health
+    health: system
 
-radarr:
-  emoji: "🎬"
-  tag: clapper
-  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/radarr.png
-  tap: dashboarr://movies
-  group: arrs
-
-sonarr:
-  emoji: "📺"
-  tag: tv
-  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/sonarr.png
-  tap: dashboarr://tv
-  group: arrs
+decypharr:
+  emoji: "📥"
+  tag: inbox_tray
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/decypharr.png
+  tap: dashboarr://downloads
+  group: downloads
 
 lidarr:
   emoji: "🎵"
@@ -37,16 +35,33 @@ lidarr:
   tap: dashboarr://music
   group: arrs
 
-whisparr:
-  emoji: "🔞"
-  tag: underage
-  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/whisparr.png
-  group: arrs
+# Apprise-only apps (/notify/<instance>)
+notify:
+  emoji: "🔔"
+  tag: bell
+  instances:
+    bazarr:
+      emoji: "💬"
+      tag: speech_balloon
+      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/bazarr.png
+      group: arrs
+    speedtest:
+      emoji: "🚀"
+      tag: rocket
+      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/speedtest-tracker.png
+      group: network
 
 prowlarr:
   emoji: "🔎"
   tag: mag
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/prowlarr.png
+  group: arrs
+
+radarr:
+  emoji: "🎬"
+  tag: clapper
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/radarr.png
+  tap: dashboarr://movies
   group: arrs
 
 seerr:
@@ -56,23 +71,15 @@ seerr:
   tap: dashboarr://requests
   group: requests
 
-decypharr:
-  emoji: "📥"
-  tag: inbox_tray
-  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/decypharr.png
-  tap: dashboarr://downloads
-  group: downloads
+sonarr:
+  emoji: "📺"
+  tag: tv
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/sonarr.png
+  tap: dashboarr://tv
+  group: arrs
 
-# Apprise-only apps (/notify): no group, so each lands in a group named after its instance
-notify:
-  emoji: "🔔"
-  tag: bell
-  instances:
-    speedtest:
-      emoji: "🚀"
-      tag: rocket
-      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/speedtest-tracker.png
-    bazarr:
-      emoji: "💬"
-      tag: speech_balloon
-      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/bazarr.png
+whisparr:
+  emoji: "🔞"
+  tag: underage
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/whisparr.png
+  group: arrs

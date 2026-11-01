@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import yaml
@@ -60,6 +60,15 @@ class AppProfile:
 
     def group_for(self, kind: str) -> str:
         return self.groups.get(kind) or self.group
+
+    def customised(self, overrides: dict[str, str]) -> "AppProfile":
+        """Copy with request overrides (?emoji=, ?icon=, ...) applied."""
+        values = {k: v for k, v in overrides.items() if k in CUSTOMISABLE and v}
+        return replace(self, **values) if values else self
+
+
+# Profile fields a request may override in its URL (group and level live on the Event)
+CUSTOMISABLE = ("name", "emoji", "tag", "icon", "tap")
 
 
 class Rules:

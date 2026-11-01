@@ -5,6 +5,19 @@ from dataclasses import dataclass, field
 
 SEVERITIES = ("low", "normal", "high", "urgent")
 
+# Level words accepted from senders (Bark levels, ntfy priorities, our severities) -> severity
+LEVEL_WORDS = {
+    "passive": "low", "low": "low", "min": "low",
+    "active": "normal", "normal": "normal", "default": "normal",
+    "timesensitive": "high", "high": "high",
+    "critical": "urgent", "urgent": "urgent", "max": "urgent", "emergency": "urgent",
+}
+
+
+def to_severity(word: str) -> str:
+    """'timeSensitive' -> 'high'; '' when the word is not a level."""
+    return LEVEL_WORDS.get((word or "").strip().lower(), "")
+
 
 @dataclass
 class Link:

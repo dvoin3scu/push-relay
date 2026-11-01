@@ -1,7 +1,7 @@
 # Severity per event action: low | normal | high | urgent
 #   Bark: passive | active | timeSensitive | critical     ntfy priority: 2 | 3 | 4 | 5
 # Lookup order: "<source>.<instance>.<action>", "<source>.<action>", "<action>", then default.
-# A level chosen by the sender (/notify with bark://critical, ...) always wins.
+# A level chosen by the sender always wins: ?level= in the URL, or the Apprise URL/tag on /notify.
 # Override in /config/rules/severity.yaml with only the keys that change, e.g.:
 #   events:
 #     radarr.radarr-4k.grab: normal

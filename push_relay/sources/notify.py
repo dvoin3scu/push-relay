@@ -11,17 +11,10 @@ from __future__ import annotations
 import re
 from urllib.parse import parse_qs, urlsplit
 
-from ..model import Event
+from ..model import Event, to_severity
 from ..text import strip_markup
 from .base import Context, Source
 
-# Words accepted as a level, mapped to a severity
-LEVEL_WORDS = {
-    "passive": "low", "low": "low", "min": "low",
-    "active": "normal", "normal": "normal", "default": "normal",
-    "timesensitive": "high", "high": "high",
-    "critical": "urgent", "urgent": "urgent", "max": "urgent", "emergency": "urgent",
-}
 TYPE_EMOJI = {"warning": "⚠️", "failure": "❌"}
 
 
@@ -38,11 +31,11 @@ def level_from(urls, tags) -> str:
         query = parse_qs(parts.query)
         candidates = [parts.netloc, *parts.path.split("/"), *query.get("level", []), *query.get("priority", [])]
         for candidate in candidates:
-            severity = LEVEL_WORDS.get(candidate.lower())
+            severity = to_severity(candidate)
             if severity:
                 return severity
     for tag in _words(tags):
-        severity = LEVEL_WORDS.get(tag.lower())
+        severity = to_severity(tag)
         if severity:
             return severity
     return ""
