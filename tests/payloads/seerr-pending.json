@@ -1,0 +1,4 @@
+{"notification_type":"MEDIA_PENDING","event":"New Movie Request","subject":"Dune: Part Two (2024)","message":"Follow the mythic journey...",
+ "image":"https://image.tmdb.org/t/p/w600_and_h900_bestv2/poster.jpg",
+ "media":{"media_type":"movie","tmdbId":"693134","tvdbId":"","status":"PENDING","status4k":"UNKNOWN"},
+ "request":{"request_id":"42","requestedBy_username":"alice"},"issue":null,"comment":null,"extra":[]}

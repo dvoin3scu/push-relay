@@ -1,0 +1,57 @@
+# Severity per event action: low | normal | high | urgent
+#   Bark: passive | active | timeSensitive | critical     ntfy priority: 2 | 3 | 4 | 5
+# Lookup order: "<source>.<instance>.<action>", "<source>.<action>", "<action>", then default.
+# A level chosen by the sender (/notify with bark://critical, ...) always wins.
+# Override in /config/rules/severity.yaml with only the keys that change, e.g.:
+#   events:
+#     radarr.radarr-4k.grab: normal
+default: normal
+
+events:
+  test: normal
+
+  # *arr media events
+  grab: low
+  import: normal
+  upgrade: normal
+  added: low
+  deleted: low
+  file_deleted: low
+  rename: low
+  retag: low
+  manual_interaction: high
+  download_failure: high
+  import_failure: high
+
+  # *arr health and updates
+  health_warning: high
+  health_error: urgent
+  health_restored: low
+  update: low
+
+  # Seerr
+  request_pending: normal
+  request_auto_requested: low
+  request_approved: low
+  request_auto_approved: low
+  request_available: normal
+  request_declined: normal
+  request_failed: high
+  issue_created: high
+  issue_comment: normal
+  issue_resolved: low
+  issue_reopened: high
+
+  # Decypharr
+  download_complete: low
+  download_failed: high
+  repair_pending: normal
+  repair_complete: normal
+  repair_failed: high
+  repair_cancelled: low
+
+  # /notify (Apprise type), when the sender gives no level
+  info: normal
+  success: normal
+  warning: high
+  failure: high

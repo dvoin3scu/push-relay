@@ -1,0 +1,11 @@
+{
+  "title": "{{emoji}} {{instance}}{{#headline}} · {{headline}}{{/headline}}",
+  "subtitle": "{{label}}",
+  "body": "{{body}}{{^body}}{{summary}}{{/body}}",
+  "image": "{{image}}",
+  "icon": "{{icon}}",
+  "group": "{{group}}",
+  "url": "{{url}}",
+  "level": "{{level}}",
+  "volume": "{{volume}}"
+}

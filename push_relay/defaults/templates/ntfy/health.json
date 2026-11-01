@@ -1,0 +1,8 @@
+{
+  "title": "{{emoji}} {{instance}} · {{headline}}",
+  "message": "{{body}}{{^body}}{{summary}}{{/body}}",
+  "tags": "{{tags}}",
+  "priority": "{{priority}}",
+  "click": "{{url}}",
+  "icon": "{{icon}}"
+}

@@ -1,0 +1,66 @@
+# Presentation per source, optionally per instance (keyed by the ?instance= value or /notify/<key>).
+#   name   display name (default: the instance value)
+#   emoji  title prefix (Bark) when the event has none of its own
+#   tag    ntfy tag (emoji shortcode)
+#   icon   Bark notification icon
+#   tap    URL opened when the notification is tapped
+#   group  Bark group (default: the display name)
+# Override in /config/rules/apps.yaml, e.g.:
+#   notify:
+#     instances:
+#       speedtest: {emoji: "🚀", icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/speedtest-tracker.png}
+default:
+  emoji: ""
+
+radarr:
+  emoji: "🎬"
+  tag: clapper
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/radarr.png
+  tap: dashboarr://movies
+
+sonarr:
+  emoji: "📺"
+  tag: tv
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/sonarr.png
+  tap: dashboarr://tv
+
+lidarr:
+  emoji: "🎵"
+  tag: notes
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/lidarr.png
+  tap: dashboarr://music
+
+whisparr:
+  emoji: "🔞"
+  tag: underage
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/whisparr.png
+
+prowlarr:
+  emoji: "🔎"
+  tag: mag
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/prowlarr.png
+
+seerr:
+  emoji: "🍿"
+  tag: popcorn
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/jellyseerr.png
+  tap: dashboarr://requests
+
+decypharr:
+  emoji: "📥"
+  tag: inbox_tray
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/decypharr.png
+  tap: dashboarr://downloads
+
+notify:
+  emoji: "🔔"
+  tag: bell
+  instances:
+    speedtest:
+      emoji: "🚀"
+      tag: rocket
+      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/speedtest-tracker.png
+    bazarr:
+      emoji: "💬"
+      tag: speech_balloon
+      icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/bazarr.png

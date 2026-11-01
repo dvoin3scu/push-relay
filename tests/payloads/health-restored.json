@@ -1,0 +1,2 @@
+{"eventType":"HealthRestored","instanceName":"Radarr HD","level":"warning","type":"IndexerStatusCheck",
+ "message":"The following issue is now resolved: Indexers unavailable due to failures: NZBgeek"}

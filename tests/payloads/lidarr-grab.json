@@ -1,0 +1,5 @@
+{"eventType":"Grab","instanceName":"Lidarr",
+ "artist":{"id":1,"name":"Radiohead","images":[{"coverType":"poster","remoteUrl":"https://example.org/artist.jpg"}]},
+ "albums":[{"id":5,"title":"OK Computer","releaseDate":"1997-05-21T00:00:00Z","images":[{"coverType":"cover","remoteUrl":"https://example.org/okc.jpg"}]}],
+ "release":{"quality":"FLAC","releaseGroup":"EAC","size":524288000,"indexer":"Indexer (Prowlarr)"},
+ "downloadClient":"qBittorrent"}

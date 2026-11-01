@@ -1,0 +1,5 @@
+{"eventType":"Grab","instanceName":"Radarr 4K","applicationUrl":"",
+ "movie":{"id":12,"title":"Drive","year":2011,"tmdbId":64690,"imdbId":"tt0780504",
+  "images":[{"coverType":"poster","url":"/MediaCover/12/poster.jpg","remoteUrl":"https://image.tmdb.org/t/p/original/602vevIURmpDfzbnv5Ubi6wIkQm.jpg"}]},
+ "release":{"quality":"WEBDL-2160p","qualityVersion":1,"releaseGroup":"FLUX","releaseTitle":"Drive.2011.2160p.WEB-DL.FLUX","indexer":"NZBgeek (Prowlarr)","size":9663676416},
+ "downloadClient":"qBittorrent","downloadClientType":"qBittorrent","downloadId":"ABC"}

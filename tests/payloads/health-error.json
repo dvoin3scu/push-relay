@@ -1,0 +1,2 @@
+{"eventType":"Health","instanceName":"Radarr HD","level":"error","type":"DownloadClientCheck",
+ "message":"Unable to communicate with Decypharr","wikiUrl":"https://wiki.servarr.com/radarr/system#download-clients-are-unavailable"}

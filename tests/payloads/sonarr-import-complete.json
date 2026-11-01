@@ -1,0 +1,7 @@
+{"eventType":"Download","instanceName":"Sonarr HD",
+ "series":{"id":3,"title":"Severance","year":2022,"tvdbId":371980,"tmdbId":95396,
+  "images":[{"coverType":"poster","remoteUrl":"https://artworks.thetvdb.com/banners/v4/series/371980/posters/1.jpg"}]},
+ "episodes":[{"seasonNumber":2,"episodeNumber":1},{"seasonNumber":2,"episodeNumber":2},{"seasonNumber":2,"episodeNumber":3}],
+ "episodeFiles":[{"size":1000000000},{"size":1000000000},{"size":1000000000}],
+ "release":{"quality":"WEBDL-1080p","releaseGroup":"NTb","indexer":"NZBgeek (Prowlarr)"},
+ "downloadClient":"SABnzbd"}

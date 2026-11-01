@@ -1,0 +1,5 @@
+{"eventType":"Download","instanceName":"Radarr 4K","isUpgrade":true,
+ "movie":{"id":12,"title":"Drive","year":2011,"tmdbId":64690,"images":[]},
+ "movieFile":{"quality":"Bluray-2160p","releaseGroup":"WtFnZb","size":14066017075},
+ "release":{"indexer":"NZBgeek (Prowlarr)","size":14066017075},
+ "downloadClient":"SABnzbd"}
