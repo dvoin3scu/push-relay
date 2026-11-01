@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from ..config import NtfySettings
 from ..http import post_json
+from ..rules import slug
 from ..templates import TemplateStore
 from .base import Notifier, Result
 
@@ -27,7 +28,7 @@ class NtfyNotifier(Notifier):
         }
 
     def send(self, view: dict) -> Result:
-        message = {"topic": self.settings.topic, **self.message(view)}
+        message = {"topic": slug(view["group"])[:64], **self.message(view)}
         headers = {"Authorization": f"Bearer {self.settings.token}"} if self.settings.token else {}
         response = post_json(self.settings.server, message, headers,
                              timeout=self.timeout, retry_delay=self.retry_delay)

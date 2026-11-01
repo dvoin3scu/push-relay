@@ -21,7 +21,7 @@ def build_view(event: Event, app: AppProfile, severity: str) -> dict:
         "image": event.image,
         "url": event.url or app.tap,
         "icon": app.icon,
-        "group": app.group or instance,
+        "group": event.group or app.group_for(event.kind) or instance,
         "tag": app.tag,
         "links": [{"label": link.label, "url": link.url} for link in event.links if link.url],
     }

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -56,6 +56,10 @@ class AppProfile:
     icon: str = ""
     tap: str = ""
     group: str = ""
+    groups: dict[str, str] = field(default_factory=dict)  # per event kind, wins over group
+
+    def group_for(self, kind: str) -> str:
+        return self.groups.get(kind) or self.group
 
 
 class Rules:
@@ -92,5 +96,7 @@ class Rules:
             if slug(key) == slug(instance):
                 entry = _merge(entry, value or {})
                 break
+        groups = {str(k): str(v) for k, v in (entry.pop("groups", None) or {}).items() if v}
         fields = AppProfile.__dataclass_fields__
-        return AppProfile(**{k: str(v) for k, v in entry.items() if k in fields and v is not None})
+        values = {k: str(v) for k, v in entry.items() if k in fields and v is not None}
+        return AppProfile(**values, groups=groups)

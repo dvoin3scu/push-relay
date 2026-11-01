@@ -26,7 +26,7 @@ class AppTest(unittest.TestCase):
         self.env = {
             "PUSH_TOKEN": "secret", "PUSH_CONFIG_DIR": self.config.name, "PUSH_RETRY_DELAY": "0",
             "BARK_SERVER": self.bark.url, "BARK_DEVICE_KEYS": "dev1, dev2", "BARK_KEY": KEY,
-            "NTFY_SERVER": self.ntfy.url, "NTFY_TOPIC": "arrs", "NTFY_TOKEN": "tk",
+            "NTFY_SERVER": self.ntfy.url, "NTFY_TOKEN": "tk",
             "SEERR_URL": "https://requests.example/",
         }
 
@@ -46,7 +46,7 @@ class AppTest(unittest.TestCase):
     def test_health(self):
         r = self.app().handle(Request("GET", "/health"))
         self.assertEqual((r.status, r.payload["backends"]), (200, ["bark", "ntfy"]))
-        r = self.app(BARK_DEVICE_KEYS="", NTFY_TOPIC="").handle(Request("GET", "/health"))
+        r = self.app(BARK_DEVICE_KEYS="", NTFY_SERVER="").handle(Request("GET", "/health"))
         self.assertEqual(r.status, 503)
         r = self.app(BARK_KEY="short").handle(Request("GET", "/health"))
         self.assertEqual(r.status, 503)
@@ -70,7 +70,7 @@ class AppTest(unittest.TestCase):
         self.assertEqual(message["title"], "🎬 radarr-4k · Drive (2011)")
         self.assertEqual(message["subtitle"], "Grabbed")
         self.assertEqual(message["body"], "WEBDL-2160p · FLUX · 9.0 GB\nNZBgeek (Prowlarr) · qBittorrent")
-        self.assertEqual((message["level"], message["group"], message["url"]), ("passive", "radarr-4k", "dashboarr://movies"))
+        self.assertEqual((message["level"], message["group"], message["url"]), ("passive", "arrs", "dashboarr://movies"))
         self.assertNotIn("volume", message)
 
         _, headers, ntfy = self.ntfy.requests[0]
@@ -80,6 +80,17 @@ class AppTest(unittest.TestCase):
         self.assertEqual(ntfy["message"], "Movie grabbed!\n\nWEBDL-2160p · FLUX · 9.0 GB\nNZBgeek (Prowlarr) · qBittorrent")
         self.assertEqual((ntfy["priority"], ntfy["tags"]), (2, ["clapper"]))
         self.assertEqual(ntfy["actions"][1]["url"], "https://requests.example/movie/64690")
+
+    def test_groups(self):
+        app = self.app()
+        self.post(app, "/hook/radarr", payload("health-error"), {"instance": "radarr-hd"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "health")
+        self.assertEqual(self.ntfy.requests[-1][2]["topic"], "health")
+        self.post(app, "/hook/seerr", payload("seerr-pending"), {"group": "Kids Requests"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "Kids Requests")
+        self.assertEqual(self.ntfy.requests[-1][2]["topic"], "kids-requests")
+        self.post(app, "/notify/speedtest", {"body": "x"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["group"], "speedtest")
 
     def test_health_error_is_critical(self):
         self.post(self.app(BARK_CRITICAL_VOLUME="6"), "/hook/radarr", payload("health-error"), {"instance": "radarr-hd"})
@@ -102,7 +113,7 @@ class AppTest(unittest.TestCase):
 
     def test_backend_failure_and_retry(self):
         self.bark.statuses = [503, 503, 400, 400]  # dev1: retried then fails; dev2: 400 is not retried
-        r = self.post(self.app(NTFY_TOPIC=""), "/hook/sonarr", {"eventType": "Test"})
+        r = self.post(self.app(NTFY_SERVER=""), "/hook/sonarr", {"eventType": "Test"})
         self.assertEqual(r.status, 502)
         self.assertEqual(len(self.bark.requests), 3)
 
@@ -113,7 +124,7 @@ class AppTest(unittest.TestCase):
         self.assertEqual(self.post(app, "/hook/unknown", {}).status, 404)
 
     def test_notify_apprise_json_and_form(self):
-        app = self.app(NTFY_TOPIC="")
+        app = self.app(NTFY_SERVER="")
         r = self.post(app, "/notify/speedtest", {"urls": "bark://critical", "title": "Speedtest", "body": "Down: 0 Mbps"})
         self.assertEqual((r.status, r.payload), (200, {"success": True}))
         message = decrypt(self.bark.requests[0][2])
@@ -126,7 +137,7 @@ class AppTest(unittest.TestCase):
 
     def test_notify_always_200(self):
         self.bark.statuses = [500, 500, 500, 500]
-        r = self.post(self.app(NTFY_TOPIC=""), "/notify", b"{broken")
+        r = self.post(self.app(NTFY_SERVER=""), "/notify", b"{broken")
         self.assertEqual((r.status, r.payload), (200, {"success": False}))
 
 

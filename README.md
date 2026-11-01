@@ -41,9 +41,8 @@ payload ─► source adapter ─► Event ─► rules (severity, app profile) 
 | `BARK_SERVER` | `https://api.day.app` | Or a self-hosted bark-server. |
 | `BARK_USER` / `BARK_PASSWORD` | — | Basic auth for a self-hosted bark-server. |
 | `BARK_CRITICAL_VOLUME` | `4` | Volume (0–10) of critical alerts. |
-| `NTFY_TOPIC` | — | **Enables ntfy.** |
-| `NTFY_SERVER` | `https://ntfy.sh` | |
-| `NTFY_TOKEN` | — | Access token. |
+| `NTFY_SERVER` | — | e.g. `https://ntfy.sh`. **Enables ntfy.** The topic is the event's group (see below). |
+| `NTFY_TOKEN` | — | Access token (optional). |
 | `PUSH_TIMEOUT` / `PUSH_RETRY_DELAY` | `10` / `5` | Seconds. One retry on network errors, 429 and 5xx; none on other 4xx. |
 | `LOG_LEVEL` | `INFO` | |
 
@@ -58,6 +57,22 @@ With neither backend configured, or an invalid `BARK_KEY`, `/health` answers 503
 | `POST /notify[/<key>]` | Apprise API emulation (`{urls, title, body, type, format, tag}`, JSON or form). `<key>` (or `?instance=`) is the instance name. The level comes from the URL (`bark://timeSensitive`, `bark://critical`, `ntfy://high`, `barks://…?level=…`) or the tag, else from the type. Always `200`. |
 
 `instance` is the display name (e.g. `radarr-4k`). Without it: the payload's `instanceName`, then the source name.
+`group` (optional, on both endpoints) picks the Bark group and ntfy topic for that sender.
+
+## Groups
+
+One group per event: the **Bark group** and the **ntfy topic** (lower-cased, `[a-z0-9-]`).
+Order: `?group=` in the URL, then `apps.yaml` (`groups[kind]`, then `group`), then the instance name.
+
+| Default group | Events |
+|---|---|
+| `arrs` | Radarr, Sonarr, Lidarr, Whisparr, Prowlarr media and test events |
+| `health` | Health, health restored and update events from any *arr |
+| `requests` | Seerr |
+| `downloads` | Decypharr |
+| instance name | `/notify` (e.g. `speedtest`, `bazarr`) |
+
+On the public ntfy.sh, topics are shared by everyone: reserve them or use your own ntfy server.
 
 ## Severity
 
@@ -113,7 +128,7 @@ events:
 # /config/rules/apps.yaml
 radarr:
   instances:
-    radarr-4k: {group: movies-4k}
+    radarr-4k: {group: movies-4k, groups: {health: health-4k}}
 ```
 
 Template view fields: `instance emoji label headline summary body image url icon group tag links source kind action severity`,

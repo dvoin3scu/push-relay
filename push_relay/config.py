@@ -34,13 +34,12 @@ class BarkSettings:
 
 @dataclass
 class NtfySettings:
-    server: str = "https://ntfy.sh"
-    topic: str = ""
+    server: str = ""  # enables ntfy; the topic is the event's group
     token: str = ""
 
     @property
     def enabled(self) -> bool:
-        return bool(self.topic)
+        return bool(self.server)
 
     def problem(self) -> str:
         return ""
@@ -81,8 +80,7 @@ class Settings:
                 password=get("BARK_PASSWORD"),
             ),
             ntfy=NtfySettings(
-                server=get("NTFY_SERVER", "https://ntfy.sh").rstrip("/"),
-                topic=get("NTFY_TOPIC"),
+                server=get("NTFY_SERVER").rstrip("/"),
                 token=get("NTFY_TOKEN"),
             ),
         )
@@ -90,5 +88,5 @@ class Settings:
     def problems(self) -> list[str]:
         problems = [p for p in (self.bark.problem(), self.ntfy.problem()) if p]
         if not self.bark.enabled and not self.ntfy.enabled:
-            problems.append("no backend configured (set BARK_DEVICE_KEYS and/or NTFY_TOPIC)")
+            problems.append("no backend configured (set BARK_DEVICE_KEYS and/or NTFY_SERVER)")
         return problems

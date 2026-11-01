@@ -24,6 +24,7 @@ class Event:
     headline  what it is about (Drive (2011), Indexer status, ...)
     summary   one sentence (Movie grabbed!, 3 episodes imported successfully!, ...)
     details   extra lines, empty ones are dropped
+    group     Bark group / ntfy topic chosen by the sender; otherwise from apps.yaml
     """
 
     source: str
@@ -38,6 +39,7 @@ class Event:
     url: str = ""
     links: list[Link] = field(default_factory=list)
     emoji: str = ""
+    group: str = ""     # set only when the sender chose it (?group=)
     severity: str = ""  # set by the adapter only when the sender chose it (e.g. /notify bark://critical)
 
     @property

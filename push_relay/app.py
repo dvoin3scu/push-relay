@@ -79,6 +79,7 @@ class Application:
         if event is None:
             log.info("%s: ignored event %s", source_name, payload.get("eventType") or "")
             return Response(200, {"status": "ignored"})
+        event.group = request.query.get("group", "")
         results = self.dispatcher.dispatch(event)
         sent = [r.backend for r in results if r.ok]
         body = {"status": "sent" if sent else "failed", "sent": sent,
@@ -90,6 +91,7 @@ class Application:
         try:
             payload = self._apprise_payload(request)
             event = NOTIFY.parse(payload, self._context(key or request.query.get("instance", "")))
+            event.group = request.query.get("group", "")
             results = self.dispatcher.dispatch(event)
             ok = any(r.ok for r in results)
         except ValueError as exc:
