@@ -72,6 +72,9 @@ Order: `?group=` in the URL, then `apps.yaml` (`groups[kind]`, then `group`), th
 | `downloads` | Decypharr |
 | instance name | `/notify` (e.g. `speedtest`, `bazarr`) |
 
+On `/notify` the group can also come from the Apprise side: a `group=` parameter on the notification URL
+(`bark://timeSensitive?group=network`) or a `group` field in the payload (`json://…?-group=subs`).
+
 On the public ntfy.sh, topics are shared by everyone: reserve them or use your own ntfy server.
 
 ## Severity

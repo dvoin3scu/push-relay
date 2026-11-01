@@ -3,6 +3,8 @@
 Apprise API stateless payload: {urls, title, body, type, format, tag}. The level comes from the
 URL the app was given (bark://timeSensitive, bark://critical, ntfy://high, ...) or from the tag;
 otherwise from the type (info/success -> normal, warning/failure -> high).
+The group can also travel with the payload: a "group" field (Apprise json:// with -group=...) or
+a group= parameter on one of the URLs (bark://timeSensitive?group=network).
 """
 from __future__ import annotations
 
@@ -46,6 +48,16 @@ def level_from(urls, tags) -> str:
     return ""
 
 
+def group_from(payload: dict) -> str:
+    if payload.get("group"):
+        return str(payload["group"])
+    for url in _words(payload.get("urls")):
+        group = parse_qs(urlsplit(url).query).get("group")
+        if group:
+            return group[0]
+    return ""
+
+
 class NotifySource(Source):
     name = "notify"
 
@@ -60,5 +72,6 @@ class NotifySource(Source):
             headline=title,
             details=body.splitlines(),
             emoji=TYPE_EMOJI.get(kind, ""),
+            group=group_from(payload),
             severity=level_from(payload.get("urls"), payload.get("tag") or payload.get("tags")),
         )

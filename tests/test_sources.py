@@ -76,6 +76,8 @@ class OtherSourcesTest(unittest.TestCase):
         self.assertEqual((e.severity, e.headline, e.body, e.instance), ("high", "Speedtest", "Ping 12 ms", "speedtest"))
         self.assertEqual(NOTIFY.parse({"urls": "barks://api.day.app/K?level=critical"}, ctx).severity, "urgent")
         self.assertEqual(NOTIFY.parse({"tag": "passive", "message": "x"}, ctx).severity, "low")
+        self.assertEqual(NOTIFY.parse({"urls": "bark://critical?group=network"}, ctx).group, "network")
+        self.assertEqual(NOTIFY.parse({"group": "subs", "message": "x"}, ctx).group, "subs")
         e = NOTIFY.parse({"body": "x", "type": "failure"}, ctx)
         self.assertEqual((e.severity, e.action, e.emoji), ("", "failure", "❌"))
 
