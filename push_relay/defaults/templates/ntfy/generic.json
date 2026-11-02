@@ -1,6 +1,7 @@
 {
   "title": "{{instance}}{{#headline}} · {{headline}}{{/headline}}",
-  "message": "{{summary}}{{#summary}}{{#body}}\n\n{{/body}}{{/summary}}{{body}}",
+  "message": "{{markdown}}{{^markdown}}{{summary}}{{#summary}}{{#body}}\n\n{{/body}}{{/summary}}{{body}}{{/markdown}}",
+  "markdown": "{{markdown_flag}}",
   "tags": "{{tags}}",
   "priority": "{{priority}}",
   "click": "{{url}}",

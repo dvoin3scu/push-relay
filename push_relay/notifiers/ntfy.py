@@ -23,6 +23,7 @@ class NtfyNotifier(Notifier):
         return {
             "priority": PRIORITIES.get(view["severity"], 3),
             "tags": [view["tag"]] if view.get("tag") else [],
+            "markdown_flag": True if view.get("markdown") else None,
             "actions": [{"action": "view", "label": link["label"], "url": link["url"]}
                         for link in view.get("links", [])][:3],  # ntfy allows 3 actions
         }

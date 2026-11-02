@@ -2,6 +2,7 @@
   "title": "{{emoji}} {{instance}}{{#headline}} · {{headline}}{{/headline}}",
   "subtitle": "{{label}}",
   "body": "{{body}}{{^body}}{{summary}}{{/body}}",
+  "markdown": "{{markdown}}",
   "image": "{{image}}",
   "icon": "{{icon}}",
   "group": "{{group}}",

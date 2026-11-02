@@ -37,6 +37,7 @@ class Event:
     headline  what it is about (Drive (2011), Indexer status, ...)
     summary   one sentence (Movie grabbed!, 3 episodes imported successfully!, ...)
     details   extra lines, empty ones are dropped
+    markdown  the sender's own Markdown body (links kept), for backends that render it; body stays plain
     group     Bark group / ntfy topic chosen by the sender; otherwise from apps.yaml
     """
 
@@ -50,6 +51,7 @@ class Event:
     details: list[str] = field(default_factory=list)
     image: str = ""
     url: str = ""
+    markdown: str = ""
     links: list[Link] = field(default_factory=list)
     emoji: str = ""
     group: str = ""     # set only when the sender chose it (?group=)

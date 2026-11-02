@@ -162,14 +162,14 @@ class AppTest(unittest.TestCase):
         readarr = {"eventType": "Download", "instanceName": "Readarr",
                    "author": {"name": "Brandon Sanderson"}, "book": {"title": "The Way of Kings",
                    "images": [{"coverType": "cover", "remoteUrl": "https://example.org/wok.jpg"}]}}
-        self.post(app, "/hook/readarr", readarr, {"instance": "rdrr"})
+        self.post(app, "/hook/readarr", readarr, {"instance": "readarr"})
         m = decrypt(self.bark.requests[-1][2])
         self.assertEqual((m["title"], m["subtitle"], m["image"], m["group"]),
-                         ("rdrr · Brandon Sanderson – The Way of Kings", "Download", "https://example.org/wok.jpg", "system"))
+                         ("readarr · Brandon Sanderson – The Way of Kings", "Download", "https://example.org/wok.jpg", "system"))
         self.post(app, "/hook/readarr", {"eventType": "Health", "level": "warning", "type": "IndexerStatusCheck",
-                                         "message": "Indexers unavailable"}, {"instance": "rdrr"})
+                                         "message": "Indexers unavailable"}, {"instance": "readarr"})
         m = decrypt(self.bark.requests[-1][2])
-        self.assertEqual((m["title"], m["body"], m["level"]), ("🚧 rdrr · Indexer status", "Indexers unavailable", "timeSensitive"))
+        self.assertEqual((m["title"], m["body"], m["level"]), ("🚧 readarr · Indexer status", "Indexers unavailable", "timeSensitive"))
         self.post(app, "/hook/jellyfin", {"NotificationType": "ItemAdded", "ServerName": "jf", "Year": 2025})
         m = decrypt(self.bark.requests[-1][2])
         self.assertEqual((m["title"], m["body"]), ("jellyfin", "NotificationType: ItemAdded\nServerName: jf\nYear: 2025"))
@@ -185,6 +185,26 @@ class AppTest(unittest.TestCase):
                       query={"instance": "bazarr"}, headers={"content-type": "application/x-www-form-urlencoded"})
         message = decrypt(self.bark.requests[-1][2])
         self.assertEqual((message["title"], message["level"]), ("bazarr · Bazarr", "active"))
+
+    def test_notify_markdown_keeps_links_for_bark_and_ntfy(self):
+        body = "**Upload** below threshold\n- [View Dashboard](https://speed.example)"
+        self.post(self.app(), "/notify/speedtest", {"title": "Speedtest", "body": body, "format": "markdown"})
+        message = decrypt(self.bark.requests[0][2])
+        self.assertEqual((message["markdown"], message["body"]), (body, "Upload below threshold\n- View Dashboard"))
+        ntfy = self.ntfy.requests[0][2]
+        self.assertEqual((ntfy["message"], ntfy["markdown"]), (body, True))
+        self.post(self.app(), "/notify/speedtest", {"title": "Speedtest", "body": "plain"})
+        self.assertNotIn("markdown", decrypt(self.bark.requests[-1][2]))
+        self.assertNotIn("markdown", self.ntfy.requests[-1][2])
+
+    def test_seerr_issues_tap_to_the_issue_in_seerr(self):
+        issue = {"notification_type": "ISSUE_CREATED", "subject": "Dune (2021)", "message": "No audio",
+                 "media": {"media_type": "movie", "tmdbId": "438631"},
+                 "issue": {"issue_id": "7", "issue_type": "AUDIO", "reportedBy_username": "alice"}}
+        self.post(self.app(), "/hook/seerr", issue)
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "https://requests.example/issues/7")
+        self.post(self.app(), "/hook/seerr", payload("seerr-pending"))
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "dashboarr://requests")
 
     def test_notify_always_200(self):
         self.bark.statuses = [500, 500, 500, 500]

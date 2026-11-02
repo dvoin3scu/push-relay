@@ -5,6 +5,7 @@ URL the app was given (bark://timeSensitive, bark://critical, ntfy://high, ...) 
 otherwise from the type (info/success -> normal, warning/failure -> high).
 The group can also travel with the payload: a "group" field (Apprise json:// with -group=...) or
 a group= parameter on one of the URLs (bark://timeSensitive?group=network).
+A Markdown body (format=markdown) is also kept as is, so Bark and ntfy can render its links.
 """
 from __future__ import annotations
 
@@ -54,13 +55,15 @@ class NotifySource(Source):
     def parse(self, payload: dict, ctx: Context) -> Event | None:
         kind = str(payload.get("type") or "info").lower()
         fmt = str(payload.get("format") or "text").lower()
-        body = strip_markup(str(payload.get("body") or payload.get("message") or ""), fmt)
+        raw_body = str(payload.get("body") or payload.get("message") or "")
+        body = strip_markup(raw_body, fmt)
         title = strip_markup(str(payload.get("title") or ""), fmt)
         return Event(
             self.name, self.instance(payload, ctx),
             kind="generic", action=kind if kind in ("info", "success", "warning", "failure") else "info",
             headline=title,
             details=body.splitlines(),
+            markdown=raw_body.strip() if fmt == "markdown" else "",
             group=group_from(payload),
             severity=level_from(payload.get("urls"), payload.get("tag") or payload.get("tags")),
         )

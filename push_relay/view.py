@@ -18,6 +18,7 @@ def build_view(event: Event, app: AppProfile, severity: str) -> dict:
         "headline": event.headline,
         "summary": event.summary,
         "body": event.body,
+        "markdown": event.markdown,
         "image": event.image,
         "url": event.url or app.tap,
         "icon": app.icon,

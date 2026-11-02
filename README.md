@@ -35,7 +35,7 @@ payload ─► source adapter ─► Event ─► rules (severity, app profile) 
 | `PUSH_TOKEN` | — | Shared secret. Send it as `?token=`, `Authorization: Bearer` or `X-Push-Token`. Unset = no auth (logged as a warning). `/health` is always open. |
 | `PUSH_PORT` | `8092` | |
 | `PUSH_CONFIG_DIR` | `/config` | Optional overrides (see below). |
-| `SEERR_URL` | — | Base URL for "Seerr" links (e.g. `https://requests.example.com`). |
+| `SEERR_URL` | — | Base URL for "Seerr" links and for the tap on Seerr issue notifications, which opens the issue (e.g. `https://requests.example.com`). |
 | `BARK_DEVICE_KEYS` | — | Comma-separated device keys. **Enables Bark.** |
 | `BARK_KEY` | — | Encryption key from the Bark app (AES-GCM, 16/24/32 characters). |
 | `BARK_SERVER` | `https://api.day.app` | Or a self-hosted bark-server. |
@@ -54,7 +54,7 @@ With neither backend configured, or an invalid `BARK_KEY`, `/health` answers 503
 |---|---|
 | `GET /health` | `200 {"status":"ok","backends":[…]}` or `503` with the problems. |
 | `POST /hook/<source>?instance=<name>` | Adapters: `radarr`, `sonarr`, `lidarr`, `whisparr`, `prowlarr`, `seerr`, `decypharr`. Any other name uses the generic adapter (see **Other apps**). `200` when at least one backend accepted it (or the event is ignored), `502` when all failed, so the app's **Test** button shows real failures. |
-| `POST /notify[/<key>]` | Apprise API emulation (`{urls, title, body, type, format, tag}`, JSON or form). `<key>` (or `?instance=`) is the instance name. The level comes from the URL (`bark://timeSensitive`, `bark://critical`, `ntfy://high`, `barks://…?level=…`) or the tag, else from the type. Always `200`. |
+| `POST /notify[/<key>]` | Apprise API emulation (`{urls, title, body, type, format, tag}`, JSON or form). `<key>` (or `?instance=`) is the instance name. The level comes from the URL (`bark://timeSensitive`, `bark://critical`, `ntfy://high`, `barks://…?level=…`) or the tag, else from the type. A Markdown body (`format: markdown`) is also sent as Bark `markdown` and ntfy Markdown, so its links stay; the plain body is the fallback. Always `200`. |
 
 `instance` is the display name (e.g. `radarr-4k`). Without it: the payload's `instanceName`, then the source name.
 

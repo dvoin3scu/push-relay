@@ -14,7 +14,7 @@
 # Override in /config/rules/apps.yaml with only the keys that change, e.g.:
 #   radarr:
 #     instances:
-#       rdrr-4k: {group: movies-4k}
+#       radarr-4k: {group: movies-4k}
 
 default:
   group: system
