@@ -28,7 +28,7 @@ class RadarrSource(ArrSource):
         if event_type == "Grab":
             release = payload.get("release") or {}
             return Outcome("grab", "Grabbed", f"{noun} grabbed!",
-                           [file_line(release), source_line(payload)])
+                           [file_line(release, with_size=True), source_line(payload)])
         if event_type == "Download":
             upgrade = bool(payload.get("isUpgrade"))
             return Outcome("upgrade" if upgrade else "import", "Upgraded" if upgrade else "Imported",

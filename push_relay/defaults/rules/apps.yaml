@@ -54,14 +54,14 @@ prowlarr:
 radarr:
   emoji: "🎬"
   tag: clapper
-  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/radarr.png
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/radarr-v1.png  # filled logo; the current one is a bare outline that looks tiny
   tap: dashboarr://movies
   group: arrs
 
 seerr:
   emoji: "🍿"
   tag: popcorn
-  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/jellyseerr.png
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/seerr.png
   tap: dashboarr://requests
   group: requests
 

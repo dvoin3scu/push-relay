@@ -34,7 +34,7 @@ class LidarrSource(ArrSource):
     def outcome(self, event_type: str, payload: dict) -> Outcome | None:
         if event_type == "Grab":
             return Outcome("grab", "Grabbed", "Album grabbed!",
-                           [file_line(payload.get("release")), source_line(payload)])
+                           [file_line(payload.get("release"), with_size=True), source_line(payload)])
         if event_type in ("Download", "AlbumDownload"):
             upgrade = bool(payload.get("isUpgrade"))
             tracks = payload.get("trackFiles") or []

@@ -20,7 +20,7 @@ class ArrTest(unittest.TestCase):
     def test_radarr_upgrade(self):
         e = SOURCES["radarr"].parse(payload("radarr-download"), CTX)
         self.assertEqual((e.action, e.label), ("upgrade", "Upgraded"))
-        self.assertEqual(e.body, "Bluray-2160p · WtFnZb · 13.1 GB\nNZBgeek (Prowlarr) · SABnzbd")
+        self.assertEqual(e.body, "Bluray-2160p · WtFnZb\nNZBgeek (Prowlarr) · SABnzbd")
 
     def test_instance_falls_back_to_payload(self):
         e = SOURCES["radarr"].parse(payload("radarr-grab"), Context(instance=""))
@@ -30,7 +30,7 @@ class ArrTest(unittest.TestCase):
         e = SOURCES["sonarr"].parse(payload("sonarr-import-complete"), CTX)
         self.assertEqual(e.headline, "Severance – S02E01–E03")
         self.assertEqual(e.summary, "3 episodes imported successfully!")
-        self.assertEqual(e.details[0], "WEBDL-1080p · NTb · 2.8 GB")
+        self.assertEqual(e.details[0], "WEBDL-1080p · NTb")
         self.assertEqual(e.links[0].url, "https://www.themoviedb.org/tv/95396")
 
     def test_lidarr_grab(self):

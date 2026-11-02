@@ -37,14 +37,12 @@ class SonarrSource(ArrSource):
         count = len(payload.get("episodes") or []) or 1
         if event_type == "Grab":
             return Outcome("grab", "Grabbed", f"{episodes_word(count)} grabbed!",
-                           [file_line(payload.get("release")), source_line(payload)])
+                           [file_line(payload.get("release"), with_size=True), source_line(payload)])
         if event_type in ("Download", "ImportComplete"):
             files = payload.get("episodeFiles")
             if files:  # On Import Complete: one notification for the whole download
-                release = payload.get("release") or {}
-                total = release.get("size") or sum(int(f.get("size") or 0) for f in files)
                 return Outcome("import", "Imported", f"{episodes_word(count)} imported successfully!",
-                               [file_line(release, total), source_line(payload)])
+                               [file_line(payload.get("release")), source_line(payload)])
             upgrade = bool(payload.get("isUpgrade"))
             return Outcome("upgrade" if upgrade else "import", "Upgraded" if upgrade else "Imported",
                            f"{episodes_word(count)} {'upgraded' if upgrade else 'imported'} successfully!",

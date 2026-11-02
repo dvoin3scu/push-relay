@@ -14,7 +14,7 @@ P=tests/payloads
 # name | path?query (without token) | payload (@file or inline JSON) | what you should see
 SAMPLES=(
   "radarr-grab|/hook/radarr?instance=radarr-4k|@$P/radarr-grab.json|🎬 radarr-4k · Drive (2011) / Grabbed, poster, passive, group arrs"
-  "radarr-upgrade|/hook/radarr?instance=radarr-4k|@$P/radarr-download.json|🎬 radarr-4k · Drive (2011) / Upgraded, 13.1 GB line, no poster in this sample, active, arrs"
+  "radarr-upgrade|/hook/radarr?instance=radarr-4k|@$P/radarr-download.json|🎬 radarr-4k · Drive (2011) / Upgraded, no size (only grabs show it), no poster in this sample, active, arrs"
   "sonarr-import|/hook/sonarr?instance=sonarr-hd|@$P/sonarr-import-complete.json|📺 sonarr-hd · Severance – S02E01–E03 / Imported, poster, active, arrs"
   "lidarr-grab|/hook/lidarr?instance=lidarr|@$P/lidarr-grab.json|🎵 lidarr · Radiohead – OK Computer (1997) / Grabbed, passive, arrs (cover is a placeholder URL)"
   "whisparr-grab|/hook/whisparr?instance=whisparr|@$P/radarr-grab.json|🔞 whisparr · Drive (2011) / Grabbed, NO image, passive, arrs"

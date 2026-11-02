@@ -45,9 +45,10 @@ def image_url(images, *cover_types: str) -> str:
     return ""
 
 
-def file_line(file: dict | None, size_bytes=None) -> str:
+def file_line(file: dict | None, with_size: bool = False) -> str:
+    """'WEBDL-2160p · FLUX', plus the size for grabs ('· 9.0 GB')."""
     file = file or {}
-    return join(file.get("quality"), file.get("releaseGroup"), size(size_bytes if size_bytes is not None else file.get("size")))
+    return join(file.get("quality"), file.get("releaseGroup"), size(file.get("size")) if with_size else "")
 
 
 def source_line(payload: dict) -> str:
@@ -128,7 +129,7 @@ class ArrSource(Source):
             info = payload.get("downloadInfo") or {}
             messages = [m for status in payload.get("downloadStatusMessages") or [] for m in status.get("messages") or []]
             return Outcome("manual_interaction", "Manual import needed", "Manual import needed", [
-                join(info.get("quality"), size(info.get("size"))),
+                info.get("quality") or "",
                 join(payload.get("downloadClient"), payload.get("downloadStatus")),
                 messages[0] if messages else "",
             ])
