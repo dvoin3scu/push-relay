@@ -35,7 +35,7 @@ payload ─► source adapter ─► Event ─► rules (severity, app profile) 
 | `PUSH_TOKEN` | — | Shared secret. Send it as `?token=`, `Authorization: Bearer` or `X-Push-Token`. Unset = no auth (logged as a warning). `/health` is always open. |
 | `PUSH_PORT` | `8092` | |
 | `PUSH_CONFIG_DIR` | `/config` | Optional overrides (see below). |
-| `SEERR_URL` | — | Base URL for "Seerr" links and for the tap on Seerr issue notifications, which opens the issue (e.g. `https://requests.example.com`). |
+| `SEERR_URL` | — | Base URL of Seerr (e.g. `https://requests.example.com`): taps on Seerr notifications and "Seerr" links. Without it, Seerr notifications have no tap. |
 | `BARK_DEVICE_KEYS` | — | Comma-separated device keys. **Enables Bark.** |
 | `BARK_KEY` | — | Encryption key from the Bark app (AES-GCM, 16/24/32 characters). |
 | `BARK_SERVER` | `https://api.day.app` | Or a self-hosted bark-server. |
@@ -69,10 +69,26 @@ Both endpoints accept query parameters that win over `apps.yaml` and the severit
 | `name` | display name in the title |
 | `emoji` | title emoji (events with their own, like health and test, keep theirs) |
 | `icon` | Bark icon URL |
-| `tap` | URL opened on tap (also wins over per-event taps, like Whisparr's StashDB link) |
+| `tap` | URL opened on tap; wins over the event's own link (see **Taps**) |
 | `tag` | ntfy tag |
 
 Example: `http://push:8092/hook/radarr?instance=radarr-4k&group=movies&level=timeSensitive&token=…`
+
+## Taps
+
+Media events open a public page of what they are about; nothing depends on a particular client app.
+`?tap=` on the URL replaces it (e.g. a deep link into your own app), so put it only on the connection
+whose events should open there.
+
+| Source | Opens |
+|---|---|
+| Radarr | the movie on TMDB |
+| Sonarr | the series on TMDB, else TVDB |
+| Lidarr | the album on MusicBrainz, or the artist when there is not exactly one album |
+| Whisparr | the scene on StashDB, when it has a StashDB id |
+| Seerr | the issue, else the movie/series page, on `SEERR_URL` |
+| *arr health issues | the wiki page the *arr links to |
+| Everything else | nothing (or `tap` from `apps.yaml`) |
 
 ## Groups
 

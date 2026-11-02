@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from ..model import Event
 from ..text import humanize, join
-from .arr import seerr_links
+from .arr import seerr_links, seerr_url
 from .base import Context, PayloadError, Source
 
 # notification_type -> (action, label)
@@ -49,7 +49,10 @@ class SeerrSource(Source):
             details.append(join(comment.get("commentedBy_username"), comment["comment_message"], sep=": "))
 
         media_type = media.get("media_type") or ""
-        issue_url = f"{ctx.seerr_url}/issues/{issue['issue_id']}" if ctx.seerr_url and issue.get("issue_id") else ""
+        if issue:
+            url = f"{ctx.seerr_url}/issues/{issue['issue_id']}" if ctx.seerr_url and issue.get("issue_id") else ""
+        else:
+            url = seerr_url(media_type, media.get("tmdbId"), ctx) if media_type in ("movie", "tv") else ""
         return Event(
             self.name, self.instance(payload, ctx),
             kind="generic" if action == "test" else "media",
@@ -58,7 +61,7 @@ class SeerrSource(Source):
             summary=payload.get("event") or label,
             details=details,
             image=payload.get("image") or "",
-            url=issue_url,  # issues open in Seerr itself; requests use the app's tap
+            url=url,  # the issue, else the movie/series page, in Seerr (needs SEERR_URL)
             emoji="🧪" if action == "test" else "",
             links=seerr_links(media_type, media.get("tmdbId"), ctx) if media_type in ("movie", "tv") else [],
         )

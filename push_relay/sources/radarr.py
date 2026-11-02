@@ -1,8 +1,8 @@
-"""Radarr, and Whisparr v2 (a Radarr fork that calls movies scenes)."""
+"""Radarr (a tap opens the movie on TMDB), and Whisparr (a Radarr fork that calls movies scenes)."""
 from __future__ import annotations
 
 from ..text import humanize, join
-from .arr import ArrSource, Outcome, Subject, file_line, image_url, seerr_links, source_line
+from .arr import ArrSource, Outcome, Subject, file_line, image_url, seerr_links, source_line, tmdb_url
 from .base import Context
 
 
@@ -20,6 +20,7 @@ class RadarrSource(ArrSource):
         return Subject(
             headline=join(movie.get("title"), f"({year})" if year else "", sep=" "),
             image=image_url(movie.get("images"), "poster", "screenshot", "fanart"),
+            url=tmdb_url("movie", movie.get("tmdbId")) if self.tmdb_links else "",
             links=seerr_links("movie", movie.get("tmdbId"), ctx) if self.tmdb_links else [],
         )
 

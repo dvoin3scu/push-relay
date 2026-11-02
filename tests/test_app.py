@@ -70,7 +70,7 @@ class AppTest(unittest.TestCase):
         self.assertEqual(message["title"], "🎬 radarr-4k · Drive (2011)")
         self.assertEqual(message["subtitle"], "Grabbed")
         self.assertEqual(message["body"], "WEBDL-2160p · FLUX · 9.0 GB\nNZBgeek (Prowlarr) · qBittorrent")
-        self.assertEqual((message["level"], message["group"], message["url"]), ("passive", "arrs", "dashboarr://movies"))
+        self.assertEqual((message["level"], message["group"], message["url"]), ("passive", "arrs", "https://www.themoviedb.org/movie/64690"))
         self.assertNotIn("volume", message)
 
         _, headers, ntfy = self.ntfy.requests[0]
@@ -204,7 +204,29 @@ class AppTest(unittest.TestCase):
         self.post(self.app(), "/hook/seerr", issue)
         self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "https://requests.example/issues/7")
         self.post(self.app(), "/hook/seerr", payload("seerr-pending"))
-        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "dashboarr://requests")
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "https://requests.example/movie/693134")
+        self.post(self.app(SEERR_URL=""), "/hook/seerr", issue)
+        self.assertNotIn("url", decrypt(self.bark.requests[-1][2]))
+
+    def test_media_taps_to_public_pages_and_health_has_none(self):
+        self.post(self.app(), "/hook/sonarr", payload("sonarr-import-complete"), {"instance": "sonarr-hd"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "https://www.themoviedb.org/tv/95396")
+        album = payload("lidarr-grab")
+        album["albums"][0]["mbId"] = "b1392450-e666-3926-a536-22c65f834433"
+        album["artist"]["mbId"] = "a74b1b7f-71a5-4011-9441-d0b5e4122711"
+        self.post(self.app(), "/hook/lidarr", album, {"instance": "lidarr"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"],
+                         "https://musicbrainz.org/release-group/b1392450-e666-3926-a536-22c65f834433")
+        album["albums"] = []
+        self.post(self.app(), "/hook/lidarr", album, {"instance": "lidarr"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"],
+                         "https://musicbrainz.org/artist/a74b1b7f-71a5-4011-9441-d0b5e4122711")
+        self.post(self.app(), "/hook/radarr", payload("health-error"), {"instance": "radarr-hd"})
+        self.assertTrue(decrypt(self.bark.requests[-1][2])["url"].startswith("https://wiki.servarr.com/"))
+        self.post(self.app(), "/hook/radarr", payload("update"), {"instance": "radarr-hd"})
+        self.assertNotIn("url", decrypt(self.bark.requests[-1][2]))
+        self.post(self.app(), "/hook/decypharr", payload("decypharr-repair-failed"), {"instance": "decypharr"})
+        self.assertNotIn("url", decrypt(self.bark.requests[-1][2]))
 
     def test_notify_always_200(self):
         self.bark.statuses = [500, 500, 500, 500]

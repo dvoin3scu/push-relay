@@ -1,9 +1,19 @@
-"""Lidarr."""
+"""Lidarr (a tap opens the album on MusicBrainz, or the artist when there is not exactly one album)."""
 from __future__ import annotations
 
 from ..text import join, year_of
 from .arr import ArrSource, Outcome, Subject, file_line, image_url, source_line
 from .base import Context
+
+
+MUSICBRAINZ = "https://musicbrainz.org"
+
+
+def musicbrainz_url(albums: list[dict], artist: dict) -> str:
+    album_id = albums[0].get("mbId") if len(albums) == 1 else ""
+    if album_id:
+        return f"{MUSICBRAINZ}/release-group/{album_id}"
+    return f"{MUSICBRAINZ}/artist/{artist['mbId']}" if artist.get("mbId") else ""
 
 
 class LidarrSource(ArrSource):
@@ -29,6 +39,7 @@ class LidarrSource(ArrSource):
         return Subject(
             headline=join(artist.get("name"), album, sep=" – "),
             image=image or image_url(artist.get("images"), "poster", "fanart"),
+            url=musicbrainz_url(albums, artist),
         )
 
     def outcome(self, event_type: str, payload: dict) -> Outcome | None:

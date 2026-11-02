@@ -1,8 +1,8 @@
-"""Sonarr."""
+"""Sonarr (a tap opens the series on TMDB, else TVDB)."""
 from __future__ import annotations
 
 from ..text import humanize, join
-from .arr import ArrSource, Outcome, Subject, file_line, image_url, seerr_links, source_line
+from .arr import ArrSource, Outcome, Subject, file_line, image_url, seerr_links, source_line, tmdb_url
 from .base import Context
 
 
@@ -18,6 +18,10 @@ def episode_range(episodes: list[dict]) -> str:
     return f"{first}–E{e2:02d}" if s1 == s2 else f"{first}–S{s2:02d}E{e2:02d}"
 
 
+def tvdb_url(tvdb_id) -> str:
+    return f"https://thetvdb.com/dereferrer/series/{tvdb_id}" if tvdb_id else ""
+
+
 def episodes_word(count: int) -> str:
     return f"{count} episodes" if count > 1 else "Episode"
 
@@ -30,6 +34,7 @@ class SonarrSource(ArrSource):
         return Subject(
             headline=join(series.get("title"), episode_range(payload.get("episodes")), sep=" – "),
             image=image_url(series.get("images"), "poster", "fanart", "banner"),
+            url=tmdb_url("tv", series.get("tmdbId")) or tvdb_url(series.get("tvdbId")),
             links=seerr_links("tv", series.get("tmdbId"), ctx),
         )
 

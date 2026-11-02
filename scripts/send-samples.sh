@@ -32,7 +32,7 @@ SAMPLES=(
   "notify-generic|/notify/backup|{\"title\":\"Backup finished\",\"body\":\"appdata: 42 containers, 3.1 GB\",\"type\":\"success\"}|backup · Backup finished (no emoji), active, group system"
   "hook-generic|/hook/homeassistant?group=casa&level=timeSensitive|{\"title\":\"Porta da garagem\",\"message\":\"Aberta há 10 minutos\",\"event\":\"alert\"}|homeassistant · Porta da garagem / Alert, timeSensitive, group casa"
   "hook-unknown|/hook/jellyfin|{\"NotificationType\":\"ItemAdded\",\"ServerName\":\"jf\",\"Year\":2025}|jellyfin / body lists the first fields, active, system"
-  "url-custom|/hook/radarr?instance=radarr-4k&name=Movies&emoji=%F0%9F%8E%A5&group=films&level=active&tap=https%3A%2F%2Fwww.themoviedb.org|@$P/radarr-grab.json|🎥 Movies · Drive (2011), active, group films, tap opens TMDB"
+  "url-custom|/hook/radarr?instance=radarr-4k&name=Movies&emoji=%F0%9F%8E%A5&group=films&level=active&tap=https%3A%2F%2Fexample.com|@$P/radarr-grab.json|🎥 Movies · Drive (2011), active, group films, tap opens example.com instead of TMDB"
 )
 
 list() { for s in "${SAMPLES[@]}"; do IFS='|' read -r name _ _ expect <<<"$s"; printf '%-17s %s\n' "$name" "$expect"; done; }

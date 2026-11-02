@@ -65,14 +65,24 @@ def check_name(check_type: str) -> str:
     return name or "Health"
 
 
+def _known(item_id) -> bool:
+    return bool(item_id) and str(item_id) != "0"
+
+
+def tmdb_url(kind: str, tmdb_id) -> str:
+    """TMDB page of a movie/tv id; '' without one."""
+    return f"https://www.themoviedb.org/{kind}/{tmdb_id}" if _known(tmdb_id) else ""
+
+
+def seerr_url(kind: str, tmdb_id, ctx: Context) -> str:
+    """Seerr page of a movie/tv id; '' without one or without SEERR_URL."""
+    return f"{ctx.seerr_url}/{kind}/{tmdb_id}" if ctx.seerr_url and _known(tmdb_id) else ""
+
+
 def seerr_links(kind: str, tmdb_id, ctx: Context) -> list[Link]:
     """TMDB and Seerr pages for a movie/tv TMDB id."""
-    if not tmdb_id or str(tmdb_id) == "0":
-        return []
-    links = [Link("TMDB", f"https://www.themoviedb.org/{kind}/{tmdb_id}")]
-    if ctx.seerr_url:
-        links.append(Link("Seerr", f"{ctx.seerr_url}/{kind}/{tmdb_id}"))
-    return links
+    links = [Link("TMDB", tmdb_url(kind, tmdb_id)), Link("Seerr", seerr_url(kind, tmdb_id, ctx))]
+    return [link for link in links if link.url]
 
 
 class ArrSource(Source):

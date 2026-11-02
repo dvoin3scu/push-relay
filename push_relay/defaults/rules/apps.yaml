@@ -3,7 +3,8 @@
 #   emoji   title prefix when the event has none of its own (health and test events bring theirs)
 #   tag     ntfy tag (emoji shortcode)
 #   icon    Bark notification icon
-#   tap     URL opened when the notification is tapped
+#   tap     URL opened on tap when the event has no link of its own (none by default; media events
+#           link to TMDB, TVDB, MusicBrainz, StashDB or Seerr, health issues to the *arr wiki)
 #   group   Bark group / ntfy topic
 #   groups  group per event kind (media | health | generic), wins over group
 #
@@ -25,14 +26,12 @@ decypharr:
   emoji: "📥"
   tag: inbox_tray
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/decypharr.png
-  tap: dashboarr://downloads
   group: downloads
 
 lidarr:
   emoji: "🎵"
   tag: notes
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/lidarr.png
-  tap: dashboarr://music
   group: arrs
 
 # Apprise-only apps (/notify/<instance>)
@@ -49,28 +48,24 @@ prowlarr:
   emoji: "🔎"
   tag: mag
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/prowlarr.png
-  tap: dashboarr://indexers
   group: arrs
 
 radarr:
   emoji: "🎬"
   tag: clapper
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/radarr-v1.png  # filled logo; the current one is a bare outline that looks tiny
-  tap: dashboarr://movies
   group: arrs
 
 seerr:
   emoji: "🍿"
   tag: popcorn
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/seerr.png
-  tap: dashboarr://requests
   group: requests
 
 sonarr:
   emoji: "📺"
   tag: tv
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/sonarr.png
-  tap: dashboarr://tv
   group: arrs
 
 whisparr:
