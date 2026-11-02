@@ -148,7 +148,7 @@ Nothing is required in `/config`. To customise, add only what changes:
 /config/templates/bark/<source>.<kind>.json   for one source only
 ```
 
-Kinds: `media`, `health`, `generic`. Examples:
+Kinds: `media`, `health`, `generic`. The defaults include `whisparr.media.json` for both backends, without the image. Examples:
 
 ```yaml
 # /config/rules/severity.yaml — the lookup order is <source>.<instance>.<action>, <source>.<action>, <action>

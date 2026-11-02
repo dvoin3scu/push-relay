@@ -109,6 +109,11 @@ class AppTest(unittest.TestCase):
         ntfy = self.ntfy.requests[0][2]
         self.assertEqual((ntfy["tags"], ntfy["priority"], ntfy["topic"]), (["movie_camera"], 5, "films"))
 
+    def test_whisparr_has_no_image(self):
+        self.post(self.app(), "/hook/whisparr", payload("radarr-grab"), {"instance": "whisparr"})
+        self.assertNotIn("image", decrypt(self.bark.requests[0][2]))
+        self.assertNotIn("attach", self.ntfy.requests[0][2])
+
     def test_health_error_is_critical(self):
         self.post(self.app(BARK_CRITICAL_VOLUME="6"), "/hook/radarr", payload("health-error"), {"instance": "radarr-hd"})
         message = decrypt(self.bark.requests[0][2])

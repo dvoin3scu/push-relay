@@ -1,0 +1,9 @@
+{
+  "title": "{{instance}}{{#headline}} · {{headline}}{{/headline}}",
+  "message": "{{summary}}{{#summary}}{{#body}}\n\n{{/body}}{{/summary}}{{body}}",
+  "tags": "{{tags}}",
+  "priority": "{{priority}}",
+  "click": "{{url}}",
+  "icon": "{{icon}}",
+  "actions": "{{actions}}"
+}
