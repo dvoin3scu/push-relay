@@ -49,6 +49,7 @@ prowlarr:
   emoji: "🔎"
   tag: mag
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/prowlarr.png
+  tap: dashboarr://indexers
   group: arrs
 
 radarr:

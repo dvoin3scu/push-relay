@@ -49,13 +49,16 @@ class Application:
         if request.method == "GET" and parts == ["health"]:
             return self.health()
         if request.method != "POST" or not parts or parts[0] not in ("hook", "notify"):
+            log.warning("%s %s: not found", request.method, request.path)
             return Response(404, {"error": "not found"})
         if not self._authorised(request):
+            log.warning("%s %s: invalid or missing token", request.method, request.path)
             return Response(401, {"error": "invalid token"})
         if parts[0] == "hook" and len(parts) == 2:
             return self.hook(parts[1], request)
         if parts[0] == "notify" and len(parts) <= 2:
             return self.notify(parts[1] if len(parts) == 2 else "", request)
+        log.warning("%s %s: not found", request.method, request.path)
         return Response(404, {"error": "not found"})
 
     # --- endpoints -------------------------------------------------------------------------
