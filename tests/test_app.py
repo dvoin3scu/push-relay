@@ -114,6 +114,16 @@ class AppTest(unittest.TestCase):
         self.assertNotIn("image", decrypt(self.bark.requests[0][2]))
         self.assertNotIn("attach", self.ntfy.requests[0][2])
 
+    def test_whisparr_taps_to_stashdb_unless_url_says_otherwise(self):
+        scene = payload("radarr-grab")
+        scene["movie"]["stashId"] = "abc-123"
+        self.post(self.app(), "/hook/whisparr", scene, {"instance": "whisparr"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "https://stashdb.org/scenes/abc-123")
+        self.post(self.app(), "/hook/whisparr", scene, {"instance": "whisparr", "tap": "https://x"})
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["url"], "https://x")
+        self.post(self.app(), "/hook/whisparr", payload("radarr-grab"), {"instance": "whisparr"})
+        self.assertNotIn("url", decrypt(self.bark.requests[-1][2]))
+
     def test_health_error_is_critical(self):
         self.post(self.app(BARK_CRITICAL_VOLUME="6"), "/hook/radarr", payload("health-error"), {"instance": "radarr-hd"})
         message = decrypt(self.bark.requests[0][2])

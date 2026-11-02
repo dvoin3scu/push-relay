@@ -67,8 +67,8 @@ class AppProfile:
         return replace(self, **values) if values else self
 
 
-# Profile fields a request may override in its URL (group and level live on the Event)
-CUSTOMISABLE = ("name", "emoji", "tag", "icon", "tap")
+# Profile fields a request may override in its URL (group, level and tap live on the Event)
+CUSTOMISABLE = ("name", "emoji", "tag", "icon")
 
 
 class Rules:

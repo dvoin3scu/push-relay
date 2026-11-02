@@ -109,11 +109,12 @@ class Application:
     # --- helpers ---------------------------------------------------------------------------
     @staticmethod
     def _customise(event: Event, query: dict[str, str]) -> dict[str, str]:
-        """Apply ?group= and ?level= to the event; return the profile overrides (?emoji=, ?icon=, ...).
+        """Apply ?group=, ?level= and ?tap= to the event; return the profile overrides (?emoji=, ?icon=, ...).
 
         The request URL wins over anything from the payload and apps.yaml.
         """
         event.group = query.get("group") or event.group
+        event.url = query.get("tap") or event.url
         event.severity = to_severity(query.get("level", "")) or event.severity
         return {key: query[key] for key in CUSTOMISABLE if query.get(key)}
 

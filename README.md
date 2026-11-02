@@ -69,7 +69,7 @@ Both endpoints accept query parameters that win over `apps.yaml` and the severit
 | `name` | display name in the title |
 | `emoji` | title emoji (events with their own, like health and test, keep theirs) |
 | `icon` | Bark icon URL |
-| `tap` | URL opened on tap |
+| `tap` | URL opened on tap (also wins over per-event taps, like Whisparr's StashDB link) |
 | `tag` | ntfy tag |
 
 Example: `http://push:8092/hook/radarr?instance=radarr-4k&group=movies&level=timeSensitive&token=…`
@@ -148,7 +148,7 @@ Nothing is required in `/config`. To customise, add only what changes:
 /config/templates/bark/<source>.<kind>.json   for one source only
 ```
 
-Kinds: `media`, `health`, `generic`. The defaults include `whisparr.media.json` for both backends, without the image. Examples:
+Kinds: `media`, `health`, `generic`. The defaults include `whisparr.media.json` for both backends, without the image (a Whisparr tap opens the scene on StashDB when it has a StashDB id). Examples:
 
 ```yaml
 # /config/rules/severity.yaml — the lookup order is <source>.<instance>.<action>, <source>.<action>, <action>

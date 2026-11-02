@@ -19,6 +19,7 @@ class Subject:
 
     headline: str = ""
     image: str = ""
+    url: str = ""  # opened on tap; empty = the app's tap from apps.yaml
     links: list[Link] = field(default_factory=list)
 
 
@@ -95,7 +96,7 @@ class ArrSource(Source):
         subject = self.subject(payload, ctx)
         return Event(self.name, instance, kind="media", action=outcome.action, label=outcome.label,
                      headline=subject.headline, summary=outcome.summary, details=outcome.details,
-                     image=subject.image, links=subject.links)
+                     image=subject.image, url=subject.url, links=subject.links)
 
     # --- implemented by each app ------------------------------------------------------------
     def subject(self, payload: dict, ctx: Context) -> Subject:

@@ -49,6 +49,16 @@ class RadarrSource(ArrSource):
 
 
 class WhisparrSource(RadarrSource):
+    """Whisparr: no TMDB links; a tap opens the scene on StashDB when it has a StashDB id."""
+
     name = "whisparr"
     noun = "Scene"
     tmdb_links = False
+    stash_url = "https://stashdb.org/scenes/{}"
+
+    def subject(self, payload: dict, ctx: Context) -> Subject:
+        subject = super().subject(payload, ctx)
+        stash_id = self._movie(payload).get("stashId")
+        if stash_id:
+            subject.url = self.stash_url.format(stash_id)
+        return subject
