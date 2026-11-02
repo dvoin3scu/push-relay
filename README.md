@@ -53,7 +53,7 @@ With neither backend configured, or an invalid `BARK_KEY`, `/health` answers 503
 | Endpoint | |
 |---|---|
 | `GET /health` | `200 {"status":"ok","backends":[…]}` or `503` with the problems. |
-| `POST /hook/<source>?instance=<name>` | `radarr`, `sonarr`, `lidarr`, `whisparr`, `prowlarr`, `seerr`, `decypharr`. `200` when at least one backend accepted it (or the event is ignored), `502` when all failed, so the app's **Test** button shows real failures. |
+| `POST /hook/<source>?instance=<name>` | Adapters: `radarr`, `sonarr`, `lidarr`, `whisparr`, `prowlarr`, `seerr`, `decypharr`. Any other name uses the generic adapter (see **Other apps**). `200` when at least one backend accepted it (or the event is ignored), `502` when all failed, so the app's **Test** button shows real failures. |
 | `POST /notify[/<key>]` | Apprise API emulation (`{urls, title, body, type, format, tag}`, JSON or form). `<key>` (or `?instance=`) is the instance name. The level comes from the URL (`bark://timeSensitive`, `bark://critical`, `ntfy://high`, `barks://…?level=…`) or the tag, else from the type. Always `200`. |
 
 `instance` is the display name (e.g. `radarr-4k`). Without it: the payload's `instanceName`, then the source name.
@@ -128,9 +128,12 @@ container name (for example behind a VPN container).
   send `{"title": "…", "body": "…", "type": "info"}` to `/notify/<name>`. It uses the `generic` template
   (`<name> · <title>` + body, no emoji) and is customised with `?emoji=`, `?icon=`, `?group=`, `?level=`, … or an
   `apps.yaml` entry under `notify.instances`. No code needed.
-- **Only sends its own fixed format** (e.g. a new *arr-style webhook): add one adapter in `push_relay/sources/`
-  that turns the payload into an `Event` and register it. It then uses the existing `media` / `health` /
-  `generic` templates; a `<source>.<kind>.json` template is only needed for a different look.
+- **Only sends its own fixed format**: point it at `/hook/<name>` anyway. Without an adapter the **generic
+  adapter** takes it: *arr-style payloads get the shared Test/Health/Update handling, anything else is read
+  from common fields (`title`/`subject`/`name`, `message`/`body`/`text`, `eventType`/`event`/`type`, `image`,
+  nested `images`), and when nothing is recognised the first top-level values are listed. Something always
+  shows up. For a richer notification, add an adapter in `push_relay/sources/` and register it; it then uses
+  the existing templates (a `<source>.<kind>.json` template is only needed for a different look).
 
 Templates are per kind of event, not per app, so a new app never needs its own template.
 

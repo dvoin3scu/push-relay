@@ -16,6 +16,7 @@ class Context:
     """Request details an adapter may need."""
 
     instance: str          # from ?instance= (may be empty)
+    source: str = ""       # name from the URL (/hook/<source>)
     seerr_url: str = ""    # base URL for "open in Seerr" links
 
 
@@ -27,4 +28,4 @@ class Source(ABC):
         """Return the event, or None when the event is deliberately ignored."""
 
     def instance(self, payload: dict, ctx: Context) -> str:
-        return ctx.instance or str(payload.get("instanceName") or "") or self.name
+        return ctx.instance or str(payload.get("instanceName") or "") or ctx.source or self.name

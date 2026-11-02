@@ -138,7 +138,26 @@ class AppTest(unittest.TestCase):
         app = self.app()
         self.assertEqual(self.post(app, "/hook/radarr", {"eventType": "Nope"}).payload, {"status": "ignored"})
         self.assertEqual(self.post(app, "/hook/radarr", b"not json").status, 400)
-        self.assertEqual(self.post(app, "/hook/unknown", {}).status, 404)
+        r = self.post(app, "/hook/unknown", {})
+        self.assertEqual((r.status, r.payload["status"]), (200, "sent"))
+        self.assertEqual(decrypt(self.bark.requests[-1][2])["title"], "unknown")
+
+    def test_generic_adapter(self):
+        app = self.app(NTFY_SERVER="")
+        readarr = {"eventType": "Download", "instanceName": "Readarr",
+                   "author": {"name": "Brandon Sanderson"}, "book": {"title": "The Way of Kings",
+                   "images": [{"coverType": "cover", "remoteUrl": "https://example.org/wok.jpg"}]}}
+        self.post(app, "/hook/readarr", readarr, {"instance": "rdrr"})
+        m = decrypt(self.bark.requests[-1][2])
+        self.assertEqual((m["title"], m["subtitle"], m["image"], m["group"]),
+                         ("rdrr · Brandon Sanderson – The Way of Kings", "Download", "https://example.org/wok.jpg", "system"))
+        self.post(app, "/hook/readarr", {"eventType": "Health", "level": "warning", "type": "IndexerStatusCheck",
+                                         "message": "Indexers unavailable"}, {"instance": "rdrr"})
+        m = decrypt(self.bark.requests[-1][2])
+        self.assertEqual((m["title"], m["body"], m["level"]), ("🚧 rdrr · Indexer status", "Indexers unavailable", "timeSensitive"))
+        self.post(app, "/hook/jellyfin", {"NotificationType": "ItemAdded", "ServerName": "jf", "Year": 2025})
+        m = decrypt(self.bark.requests[-1][2])
+        self.assertEqual((m["title"], m["body"]), ("jellyfin", "NotificationType: ItemAdded\nServerName: jf\nYear: 2025"))
 
     def test_notify_apprise_json_and_form(self):
         app = self.app(NTFY_SERVER="")

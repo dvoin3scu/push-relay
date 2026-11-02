@@ -13,7 +13,7 @@ from .dispatcher import Dispatcher
 from .model import Event, to_severity
 from .notifiers import build_notifiers
 from .rules import CUSTOMISABLE, Rules
-from .sources import NOTIFY, SOURCES, Context, PayloadError
+from .sources import GENERIC, NOTIFY, SOURCES, Context, PayloadError
 from .templates import TemplateStore
 
 log = logging.getLogger("push-relay")
@@ -68,18 +68,20 @@ class Application:
     def hook(self, source_name: str, request: Request) -> Response:
         source = SOURCES.get(source_name)
         if source is None:
-            return Response(404, {"error": f"unknown source '{source_name}'", "sources": sorted(SOURCES)})
+            log.info("%s: no adapter, using the generic one", source_name)
+            source = GENERIC
         try:
             payload = json.loads(request.body or b"{}")
             if not isinstance(payload, dict):
                 raise PayloadError("payload is not a JSON object")
-            event = source.parse(payload, self._context(request.query.get("instance", "")))
+            event = source.parse(payload, self._context(request.query.get("instance", ""), source_name))
         except (ValueError, PayloadError) as exc:
             log.warning("%s: rejected payload: %s", source_name, exc)
             return Response(400, {"error": str(exc)})
         if event is None:
             log.info("%s: ignored event %s", source_name, payload.get("eventType") or "")
             return Response(200, {"status": "ignored"})
+        event.source = source_name  # rules and apps.yaml see the name from the URL (also for the generic adapter)
         results = self.dispatcher.dispatch(event, self._customise(event, request.query))
         sent = [r.backend for r in results if r.ok]
         body = {"status": "sent" if sent else "failed", "sent": sent,
@@ -112,8 +114,8 @@ class Application:
         event.severity = to_severity(query.get("level", "")) or event.severity
         return {key: query[key] for key in CUSTOMISABLE if query.get(key)}
 
-    def _context(self, instance: str) -> Context:
-        return Context(instance=instance, seerr_url=self.settings.seerr_url)
+    def _context(self, instance: str, source: str = "") -> Context:
+        return Context(instance=instance, source=source, seerr_url=self.settings.seerr_url)
 
     def _authorised(self, request: Request) -> bool:
         expected = self.settings.token
