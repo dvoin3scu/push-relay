@@ -228,6 +228,18 @@ class AppTest(unittest.TestCase):
         self.post(self.app(), "/hook/decypharr", payload("decypharr-repair-failed"), {"instance": "decypharr"})
         self.assertNotIn("url", decrypt(self.bark.requests[-1][2]))
 
+    def test_dispatcharr_form_without_template(self):
+        r = self.post(self.app(), "/hook/dispatcharr", b"channel_name=News+1&stream_name=News+HD&provider_name=IPTV+A",
+                      {"instance": "iptv"}, headers={"content-type": "application/x-www-form-urlencoded"})
+        self.assertEqual(r.status, 200)
+        m = decrypt(self.bark.requests[-1][2])
+        self.assertEqual((m["title"], m["subtitle"], m["body"], m["group"], m["level"]),
+                         ("▶️ iptv · News 1", "Channel started", "News HD · IPTV A", "iptv", "passive"))
+        self.post(self.app(), "/hook/dispatcharr", {"event": "login_failed", "user": "admin", "reason": "invalid credentials",
+                                                     "client_ip": "1.2.3.4"}, {"instance": "iptv"})
+        m = decrypt(self.bark.requests[-1][2])
+        self.assertEqual((m["title"], m["group"], m["level"]), ("🔐 iptv · admin", "system", "timeSensitive"))
+
     def test_notify_always_200(self):
         self.bark.statuses = [500, 500, 500, 500]
         r = self.post(self.app(NTFY_SERVER=""), "/notify", b"{broken")

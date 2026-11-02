@@ -55,3 +55,27 @@ events:
   success: normal
   warning: high
   failure: high
+
+  # Dispatcharr: playback is passive; errors and security events break through Focus
+  dispatcharr.channel_start: low
+  dispatcharr.channel_stop: low
+  dispatcharr.channel_reconnect: low
+  dispatcharr.stream_switch: low
+  dispatcharr.channel_failover: normal
+  dispatcharr.channel_error: high
+  dispatcharr.recording_start: low
+  dispatcharr.recording_end: normal
+  dispatcharr.recording_interrupted: high
+  dispatcharr.epg_refresh: low
+  dispatcharr.m3u_refresh: low
+  dispatcharr.epg_error: high
+  dispatcharr.m3u_error: high
+  dispatcharr.client_connect: low
+  dispatcharr.client_disconnect: low
+  dispatcharr.login_failed: high
+  dispatcharr.epg_blocked: high
+  dispatcharr.m3u_blocked: high
+  dispatcharr.blocked: high
+  dispatcharr.vod_start: low
+  dispatcharr.vod_stop: low
+  dispatcharr.vod: low

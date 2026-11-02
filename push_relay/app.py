@@ -74,9 +74,7 @@ class Application:
             log.info("%s: no adapter, using the generic one", source_name)
             source = GENERIC
         try:
-            payload = json.loads(request.body or b"{}")
-            if not isinstance(payload, dict):
-                raise PayloadError("payload is not a JSON object")
+            payload = self._payload(request)
             event = source.parse(payload, self._context(request.query.get("instance", ""), source_name))
         except (ValueError, PayloadError) as exc:
             log.warning("%s: rejected payload: %s", source_name, exc)
@@ -94,7 +92,7 @@ class Application:
     def notify(self, key: str, request: Request) -> Response:
         """Apprise API emulation; always answers 200 so the sender never retries or disables us."""
         try:
-            payload = self._apprise_payload(request)
+            payload = self._payload(request)
             event = NOTIFY.parse(payload, self._context(key or request.query.get("instance", "")))
             results = self.dispatcher.dispatch(event, self._customise(event, request.query))
             ok = any(r.ok for r in results)
@@ -132,10 +130,13 @@ class Application:
         return hmac.compare_digest(given.encode(), expected.encode())
 
     @staticmethod
-    def _apprise_payload(request: Request) -> dict:
+    def _payload(request: Request) -> dict:
+        """JSON object, or form fields (Apprise forms, Dispatcharr without a payload template)."""
         content_type = request.headers.get("content-type", "")
         text = request.body.decode(errors="replace")
         if "application/x-www-form-urlencoded" in content_type:
-            return {k: v[-1] for k, v in parse_qs(text).items()}
+            return {k: v[-1] for k, v in parse_qs(text, keep_blank_values=True).items()}
         payload = json.loads(text or "{}")
-        return payload if isinstance(payload, dict) else {}
+        if not isinstance(payload, dict):
+            raise PayloadError("payload is not a JSON object")
+        return payload

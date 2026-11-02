@@ -82,5 +82,38 @@ class OtherSourcesTest(unittest.TestCase):
         self.assertEqual((e.severity, e.action, e.emoji), ("", "failure", ""))
 
 
+
+class DispatcharrTest(unittest.TestCase):
+    def parse(self, payload):
+        return SOURCES["dispatcharr"].parse(payload, Context(instance="iptv"))
+
+    def test_event_from_template(self):
+        e = self.parse({"event": "vod_stop", "content_name": "Heat", "username": "alice", "client_ip": "10.0.0.5",
+                        "channel_name": "", "message": ""})
+        self.assertEqual((e.action, e.label, e.headline, e.kind), ("vod_stop", "VOD stopped", "Heat", "generic"))
+        self.assertEqual(e.body, "alice · 10.0.0.5")
+
+    def test_inferred_without_template(self):
+        cases = {
+            "channel_start": {"channel_name": "News 1", "stream_name": "News HD", "provider_name": "IPTV A"},
+            "channel_stop": {"channel_name": "News 1", "runtime": "3725.4", "total_bytes": "1073741824"},
+            "recording_start": {"channel_name": "News 1", "recording_id": "4"},
+            "recording_interrupted": {"channel_name": "News 1", "recording_id": "4", "interrupted": "True"},
+            "m3u_error": {"account_name": "IPTV A", "message": "HTTP 403"},
+            "epg_refresh": {"source_name": "EPG A", "programs": "1200"},
+            "login_failed": {"user": "admin", "client_ip": "1.2.3.4", "reason": "invalid credentials"},
+            "blocked": {"profile": "all", "client_ip": "1.2.3.4", "reason": "network access denied"},
+            "vod": {"content_name": "Heat", "content_uuid": "x"},
+        }
+        for action, fields in cases.items():
+            self.assertEqual(self.parse(fields).action, action, fields)
+
+    def test_details(self):
+        e = self.parse({"channel_name": "News 1", "runtime": "3725.4", "total_bytes": "1073741824"})
+        self.assertEqual((e.label, e.body), ("Channel stopped", "1h02m · 1.0 GB"))
+        e = self.parse({"user": "admin", "client_ip": "1.2.3.4", "reason": "invalid credentials"})
+        self.assertEqual((e.kind, e.headline, e.body), ("health", "admin", "invalid credentials\nadmin · 1.2.3.4"))
+
+
 if __name__ == "__main__":
     unittest.main()

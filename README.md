@@ -98,10 +98,11 @@ Order: `?group=`, then (on `/notify`) a group from the Apprise side, then `apps.
 | Default group | Events |
 |---|---|
 | `arrs` | Radarr, Sonarr, Lidarr, Whisparr, Prowlarr media and test events |
-| `system` | Health, health restored and update events from any *arr; anything without a group |
+| `system` | Health, health restored and update events from any *arr; Dispatcharr errors and security events; anything without a group |
 | `requests` | Seerr |
 | `downloads` | Decypharr |
 | `network` | Speedtest Tracker |
+| `iptv` | Dispatcharr playback, recordings and refreshes |
 
 On `/notify` the group can also come from the Apprise side: a `group=` parameter on the notification URL
 (`bark://timeSensitive?group=network`) or a `group` field in the payload (`json://…?-group=media`).
@@ -134,6 +135,25 @@ container name (for example behind a VPN container).
 ```json
 "notifications": { "enabled": true, "callback_url": "http://push:8092/hook/decypharr?token=…", "events": ["download_failed", "repair_failed"] }
 ```
+
+**Dispatcharr** — Connect → New Connection → **Webhook**: URL `http://push:8092/hook/dispatcharr?token=…`.
+A payload template is optional. Without one, Dispatcharr form-encodes the event's fields and leaves out the
+event name, so the relay infers it; VOD started/stopped and EPG/M3U blocked then cannot be told apart.
+For exact events, give every event the same template and change only the first line to that event's name
+(`channel_start`, `channel_stop`, `recording_start`, `recording_end`, `vod_start`, `vod_stop`, `epg_error`,
+`m3u_error`, `login_failed`, `epg_blocked`, `m3u_blocked`, …):
+```django
+{"event": "channel_start",
+ "channel_name": "{{ channel_name|escapejs }}", "stream_name": "{{ stream_name|escapejs }}",
+ "provider_name": "{{ provider_name|escapejs }}", "runtime": "{{ runtime }}", "total_bytes": "{{ total_bytes }}",
+ "recording_id": "{{ recording_id }}", "interrupted": "{{ interrupted }}", "bytes_written": "{{ bytes_written }}",
+ "content_name": "{{ content_name|escapejs }}", "account_name": "{{ account_name|escapejs }}",
+ "source_name": "{{ source_name|escapejs }}", "message": "{{ message|escapejs }}",
+ "error_message": "{{ error_message|escapejs }}", "reason": "{{ reason|escapejs }}",
+ "profile": "{{ profile|escapejs }}", "user": "{{ user|escapejs }}", "username": "{{ username|escapejs }}",
+ "client_ip": "{{ client_ip }}", "duration": "{{ duration }}"}
+```
+Errors and security events are kind `health` (group `system`, like *arr health); playback goes to `iptv`.
 
 **Apprise-only apps (Speedtest Tracker, …)** — point the Apprise API URL at
 `http://push:8092/notify/<name>?token=…` and use a notification URL that names the level, e.g. `bark://timeSensitive`.
@@ -187,7 +207,7 @@ replaced by the raw value (list/number); empty fields are dropped.
 ## Trying it out
 
 `scripts/send-samples.sh` sends one sample of every variation (arr media, manual import, test, health,
-update, Seerr, Decypharr, Apprise, generic hook, URL customisation) to a running relay and prints what
+update, Seerr, Decypharr, Dispatcharr, Apprise, generic hook, URL customisation) to a running relay and prints what
 should appear:
 
 ```bash

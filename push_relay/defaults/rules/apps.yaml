@@ -28,6 +28,12 @@ decypharr:
   icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/decypharr.png
   group: downloads
 
+dispatcharr:
+  emoji: "📡"
+  tag: satellite
+  icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/dispatcharr.png
+  group: iptv  # errors and security events are kind health -> system
+
 lidarr:
   emoji: "🎵"
   tag: notes

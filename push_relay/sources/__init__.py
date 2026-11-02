@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from .base import Context, PayloadError, Source
 from .decypharr import DecypharrSource
+from .dispatcharr import DispatcharrSource
 from .generic import GenericSource
 from .lidarr import LidarrSource
 from .notify import NotifySource
@@ -16,7 +17,7 @@ __all__ = ["Context", "PayloadError", "Source", "SOURCES", "NOTIFY", "GENERIC"]
 SOURCES: dict[str, Source] = {
     source.name: source
     for source in (RadarrSource(), WhisparrSource(), SonarrSource(), LidarrSource(),
-                   ProwlarrSource(), SeerrSource(), DecypharrSource())
+                   ProwlarrSource(), SeerrSource(), DecypharrSource(), DispatcharrSource())
 }
 NOTIFY = NotifySource()
 GENERIC = GenericSource()  # /hook/<name> without an adapter
