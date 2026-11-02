@@ -15,9 +15,6 @@ from ..model import Event, to_severity
 from ..text import strip_markup
 from .base import Context, Source
 
-TYPE_EMOJI = {"warning": "⚠️", "failure": "❌"}
-
-
 def _words(value) -> list[str]:
     if isinstance(value, (list, tuple)):
         value = " ".join(str(v) for v in value)
@@ -64,7 +61,6 @@ class NotifySource(Source):
             kind="generic", action=kind if kind in ("info", "success", "warning", "failure") else "info",
             headline=title,
             details=body.splitlines(),
-            emoji=TYPE_EMOJI.get(kind, ""),
             group=group_from(payload),
             severity=level_from(payload.get("urls"), payload.get("tag") or payload.get("tags")),
         )

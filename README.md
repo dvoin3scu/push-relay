@@ -126,7 +126,7 @@ container name (for example behind a VPN container).
 
 - **Speaks Apprise, or lets you write the webhook JSON** (Jellyfin webhook plugin, Home Assistant, scripts, …):
   send `{"title": "…", "body": "…", "type": "info"}` to `/notify/<name>`. It uses the `generic` template
-  (`🔔 <name> · <title>` + body) and is customised with `?emoji=`, `?icon=`, `?group=`, `?level=`, … or an
+  (`<name> · <title>` + body, no emoji) and is customised with `?emoji=`, `?icon=`, `?group=`, `?level=`, … or an
   `apps.yaml` entry under `notify.instances`. No code needed.
 - **Only sends its own fixed format** (e.g. a new *arr-style webhook): add one adapter in `push_relay/sources/`
   that turns the payload into an `Event` and register it. It then uses the existing `media` / `health` /

@@ -36,9 +36,8 @@ lidarr:
   group: arrs
 
 # Apprise-only apps (/notify/<instance>)
+# No emoji or tag by default; set them per instance or with ?emoji= / ?tag=.
 notify:
-  emoji: "🔔"
-  tag: bell
   instances:
     speedtest:
       emoji: "🚀"
