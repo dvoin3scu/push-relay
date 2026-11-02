@@ -168,6 +168,17 @@ Template view fields: `instance emoji label headline summary body image url icon
 plus `level volume` (Bark) and `priority tags actions` (ntfy). A value that is exactly `"{{name}}"` is
 replaced by the raw value (list/number); empty fields are dropped.
 
+## Trying it out
+
+`scripts/send-samples.sh` sends one sample of every variation (arr media, manual import, test, health,
+update, Seerr, Decypharr, Apprise, generic hook, URL customisation) to a running relay and prints what
+should appear:
+
+```bash
+PUSH_URL=http://<host>:8092 PUSH_TOKEN=… scripts/send-samples.sh --list
+PUSH_URL=http://<host>:8092 PUSH_TOKEN=… scripts/send-samples.sh all
+```
+
 ## Development
 
 ```bash
