@@ -33,7 +33,7 @@ payload ─► source adapter ─► Event ─► rules (severity, app profile) 
 | Variable | Default | |
 |---|---|---|
 | `PUSH_TOKEN` | — | Shared secret. Send it as `?token=`, `Authorization: Bearer` or `X-Push-Token`. Unset = no auth (logged as a warning). `/health` is always open. |
-| `PUSH_PORT` | `8092` | |
+| `PUSH_PORT` | `8099` | |
 | `PUSH_CONFIG_DIR` | `/config` | Optional overrides (see below). |
 | `SEERR_URL` | — | Base URL of Seerr (e.g. `https://requests.example.com`): taps on Seerr notifications and "Seerr" links. Without it, Seerr notifications have no tap. |
 | `BARK_DEVICE_KEYS` | — | Comma-separated device keys. **Enables Bark.** |
@@ -72,7 +72,7 @@ Both endpoints accept query parameters that win over `apps.yaml` and the severit
 | `tap` | URL opened on tap; wins over the event's own link (see **Taps**) |
 | `tag` | ntfy tag |
 
-Example: `http://push:8092/hook/radarr?instance=radarr-4k&group=movies&level=timeSensitive&token=…`
+Example: `http://push:8099/hook/radarr?instance=radarr-4k&group=movies&level=timeSensitive&token=…`
 
 ## Taps
 
@@ -122,21 +122,21 @@ Defaults are in [`push_relay/defaults/rules/severity.yaml`](push_relay/defaults/
 
 ## Setting up the apps
 
-Replace `push:8092` with the LAN address (e.g. `192.168.1.10:8092`) for apps that cannot resolve the
+Replace `push:8099` with the LAN address (e.g. `192.168.1.10:8099`) for apps that cannot resolve the
 container name (for example behind a VPN container).
 
 **Radarr / Sonarr / Lidarr / Whisparr / Prowlarr** — Settings → Connect → + → **Webhook**
-- URL `http://push:8092/hook/radarr?instance=radarr-4k&token=…`, Method `POST`.
+- URL `http://push:8099/hook/radarr?instance=radarr-4k&token=…`, Method `POST`.
 - Pick the triggers you want. Sonarr: use **On Import Complete** (one notification per download) instead of On File Import.
 
-**Seerr** — Settings → Notifications → **Webhook**: URL `http://push:8092/hook/seerr?token=…`, keep the default JSON payload.
+**Seerr** — Settings → Notifications → **Webhook**: URL `http://push:8099/hook/seerr?token=…`, keep the default JSON payload.
 
 **Decypharr** — `config.json`:
 ```json
-"notifications": { "enabled": true, "callback_url": "http://push:8092/hook/decypharr?token=…", "events": ["download_failed", "repair_failed"] }
+"notifications": { "enabled": true, "callback_url": "http://push:8099/hook/decypharr?token=…", "events": ["download_failed", "repair_failed"] }
 ```
 
-**Dispatcharr** — Connect → New Connection → **Webhook**: URL `http://push:8092/hook/dispatcharr?token=…`.
+**Dispatcharr** — Connect → New Connection → **Webhook**: URL `http://push:8099/hook/dispatcharr?token=…`.
 A payload template is optional. Without one, Dispatcharr form-encodes the event's fields and leaves out the
 event name, so the relay infers it; VOD started/stopped and EPG/M3U blocked then cannot be told apart.
 For exact events, give every event the same template and change only the first line to that event's name
@@ -156,7 +156,7 @@ For exact events, give every event the same template and change only the first l
 Errors and security events are kind `health` (group `system`, like *arr health); playback goes to `iptv`.
 
 **Apprise-only apps (Speedtest Tracker, …)** — point the Apprise API URL at
-`http://push:8092/notify/<name>?token=…` and use a notification URL that names the level, e.g. `bark://timeSensitive`.
+`http://push:8099/notify/<name>?token=…` and use a notification URL that names the level, e.g. `bark://timeSensitive`.
 
 ## Other apps
 
@@ -211,8 +211,8 @@ update, Seerr, Decypharr, Dispatcharr, Apprise, generic hook, URL customisation)
 should appear:
 
 ```bash
-PUSH_URL=http://<host>:8092 PUSH_TOKEN=… scripts/send-samples.sh --list
-PUSH_URL=http://<host>:8092 PUSH_TOKEN=… scripts/send-samples.sh all
+PUSH_URL=http://<host>:8099 PUSH_TOKEN=… scripts/send-samples.sh --list
+PUSH_URL=http://<host>:8099 PUSH_TOKEN=… scripts/send-samples.sh all
 ```
 
 ## Development
@@ -220,7 +220,7 @@ PUSH_URL=http://<host>:8092 PUSH_TOKEN=… scripts/send-samples.sh all
 ```bash
 pip install -r requirements.txt
 python -m unittest discover -s tests -t .
-PUSH_PORT=8092 BARK_DEVICE_KEYS=… BARK_KEY=… python -m push_relay
+PUSH_PORT=8099 BARK_DEVICE_KEYS=… BARK_KEY=… python -m push_relay
 ```
 
 Images: `ghcr.io/dvoin3scu/push-relay` (`latest` from `main`, `X.Y.Z`/`X.Y` from `vX.Y.Z` tags, `sha-…`), built by

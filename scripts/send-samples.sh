@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Sends one sample of every notification variation to a running push-relay, so you can see them on the phone.
 # Usage:
-#   PUSH_URL=http://192.168.1.10:8092 PUSH_TOKEN=… scripts/send-samples.sh --list
+#   PUSH_URL=http://192.168.1.10:8099 PUSH_TOKEN=… scripts/send-samples.sh --list
 #   PUSH_URL=… PUSH_TOKEN=… scripts/send-samples.sh all              # every sample, 3 s apart
 #   PUSH_URL=… PUSH_TOKEN=… scripts/send-samples.sh radarr-grab health-error
 # Note: health-error is a critical alert (sound, even in silent mode).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-URL="${PUSH_URL:-http://localhost:8092}"
+URL="${PUSH_URL:-http://localhost:8099}"
 TOKEN="${PUSH_TOKEN:-}"
 P=tests/payloads
 

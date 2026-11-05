@@ -47,7 +47,7 @@ class NtfySettings:
 
 @dataclass
 class Settings:
-    port: int = 8092
+    port: int = 8099
     token: str = ""
     config_dir: Path = Path("/config")
     seerr_url: str = ""
@@ -65,7 +65,7 @@ class Settings:
         except ValueError:
             volume = 4
         return cls(
-            port=int(get("PUSH_PORT", "8092")),
+            port=int(get("PUSH_PORT", "8099")),
             token=get("PUSH_TOKEN"),
             config_dir=Path(get("PUSH_CONFIG_DIR", "/config")),
             seerr_url=get("SEERR_URL").rstrip("/"),
